@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/api/inventory/3"
+  },
+  "response": {
+    "status": 500,
+    "jsonBody": {
+      "message": "An error occurred while fetching inventory details"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

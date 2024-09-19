@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/api/inventory/2"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "id": 123,
+      "quantity": 15
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
