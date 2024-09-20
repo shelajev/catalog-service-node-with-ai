@@ -17,10 +17,6 @@ build/
 .env.local
 .env.*.local
 
-# Ignore package lock files
-package-lock.json
-yarn.lock
-
 # Ignore editor-specific files
 .vscode/
 .idea/
