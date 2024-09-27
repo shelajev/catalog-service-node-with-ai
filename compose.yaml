@@ -22,6 +22,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: pgadmin@mycomp.com
       PGADMIN_DEFAULT_PASSWORD: secret
       PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     depends_on:
       - postgres
 
