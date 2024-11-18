@@ -5,13 +5,16 @@ describe("Product creation", () => {
   let postgresContainer, kafkaContainer, productService, publisherService;
 
   beforeAll(async () => {
-    // Start postgres
+    console.log("Starting containers");
+
     postgresContainer = await createAndBootstrapPostgresContainer();
     kafkaContainer = await createAndBootstrapKafkaContainer();
+  }, 120000); // Making this very long in case the images need to be pulled
 
+  beforeAll(async () => {
     productService = require("../src/services/ProductService");
     publisherService = require("../src/services/PublisherService");
-  }, 120000); // Making this very long in case the images need to be pulled
+  });
   
   afterAll(async () => {
     await productService.teardown();
@@ -51,28 +54,29 @@ describe("Product creation", () => {
     try {
       await consumer.connect();
 
-      let result = { receivedMessage : false };
-      await consumer.subscribe({ topic: "products", fromBeginning: false });
+      let result = { receivedMessage : false }, createdProduct;
+      await consumer.subscribe({ topic: "products", fromBeginning: true });
       await consumer.run({
         eachMessage: async ({ topic, partition, message }) => {
-          result.receivedMessage = true;
-          console.log("Data", message.value.toString());
-          // const data = JSON.parse(message.value.toString());
-          // TODO - actually validate the message
+          const data = JSON.parse(message.value.toString());
+
+          if (data.id === createdProduct.id && data.action === "product_created") {
+            result.receivedMessage = true;
+          }
         }
       });
 
-      const product = await productService.createProduct({ name: "Test Product", price: 100 });
+      createdProduct = await productService.createProduct({ name: "Test Product", price: 100 });
   
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      expect(createdProduct.id).toBeDefined();
+      expect(createdProduct.name).toBe("Test Product");
+      expect(createdProduct.price).toBe(100);
 
-      expect(product.id).toBeDefined();
-      expect(product.name).toBe("Test Product");
-      expect(product.price).toBe(100);
-
-      waitFor(
-        () => expect(result.receivedMessage).toBe(true),
-        2000,
+      await waitFor(
+        () => {
+          expect(result.receivedMessage).toBe(true)
+        },
+        5000,
       );
     } finally {
       await consumer.disconnect();

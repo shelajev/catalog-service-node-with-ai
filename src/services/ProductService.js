@@ -27,7 +27,7 @@ async function createProduct(product) {
   const newProductId = result.rows[0].id;
 
   publishEvent("products", { 
-    action: "product_createdd",
+    action: "product_created",
     id: newProductId, 
     name: product.name, 
     price: product.price 

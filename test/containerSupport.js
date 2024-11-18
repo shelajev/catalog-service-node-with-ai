@@ -34,8 +34,6 @@ async function createAndBootstrapKafkaContainer() {
 
   await kafkaContainer.exec("kafka-topics --create --topic products --partitions 1 --replication-factor 1 --bootstrap-server localhost:9092");
 
-  // await (new Promise((resolve) => setTimeout(resolve, 1000)));
-
   return kafkaContainer;
 }
 
