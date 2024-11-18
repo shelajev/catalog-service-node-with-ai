@@ -28,7 +28,7 @@ services:
 
   ############## DATABASE AND VISUALIZER ##############
   postgres:
-    image: postgres
+    image: postgres:17.1
     volumes:
       - ./dev/db:/docker-entrypoint-initdb.d
     environment:
@@ -37,7 +37,7 @@ services:
       POSTGRES_DB: catalog
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:8.13.0
     volumes:
       - ./dev/pgadmin/servers.json:/pgadmin4/servers.json
     environment:
@@ -52,13 +52,13 @@ services:
 
   ############## LOCAL AWS ##############
   aws:
-    image: localstack/localstack
+    image: localstack/localstack:3.8.1
     labels:
       traefik.http.routers.aws.rule: Host(`aws.localhost`)
       traefik.http.services.aws.loadbalancer.server.port: 4566
 
   bucket-creator:
-    image: localstack/localstack
+    image: localstack/localstack:3.8.1
     entrypoint: []
     command: awslocal --endpoint-url http://aws:4566 s3api create-bucket --bucket product-images
     depends_on:
@@ -67,7 +67,7 @@ services:
 
   ############## MOCK INVENTORY SERVICE ##############
   mock-inventory:
-    image: wiremock/wiremock
+    image: wiremock/wiremock:3.9.2
     volumes:
       - ./dev/inventory-mocks:/home/wiremock
     labels:
@@ -76,7 +76,7 @@ services:
 
   ############## KAFKA AND VISUALIZATION ##############
   kafka:
-    image: apache/kafka-native
+    image: apache/kafka-native:3.9.0
     environment:
       # Configure listeners for both docker and host communication
       KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
@@ -96,13 +96,13 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafka-topic-creator:
-    image: apache/kafka
+    image: apache/kafka:3.9.0
     command: /opt/kafka/bin/kafka-topics.sh --create --topic products --partitions 1 --replication-factor 1 --bootstrap-server kafka:9093
     depends_on:
       - kafka
 
   kafka-ui:
-    image: ghcr.io/kafbat/kafka-ui:latest
+    image: ghcr.io/kafbat/kafka-ui:01aa8ab36387c5f1d66d098e71488bfb0eb5f39c
     environment:
       DYNAMIC_CONFIG_ENABLED: 'true'
       KAFKA_CLUSTERS_0_NAME: local

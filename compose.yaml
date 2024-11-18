@@ -2,7 +2,7 @@ services:
 
   ############## DATABASE AND VISUALIZER ##############
   postgres:
-    image: postgres
+    image: postgres:17.1
     ports:
       - "5432:5432"
     volumes:
@@ -13,7 +13,7 @@ services:
       POSTGRES_DB: catalog
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:8.13.0
     ports:
       - "5050:80"
     volumes:
@@ -28,12 +28,12 @@ services:
 
   ############## LOCAL AWS ##############
   aws:
-    image: localstack/localstack
+    image: localstack/localstack:3.8.1
     ports:
       - "4566:4566"
 
   bucket-creator:
-    image: localstack/localstack
+    image: localstack/localstack:3.8.1
     entrypoint: []
     command: awslocal --endpoint-url http://aws:4566 s3api create-bucket --bucket product-images
     depends_on:
@@ -42,7 +42,7 @@ services:
 
   ############## MOCK INVENTORY SERVICE ##############
   mock-inventory:
-    image: wiremock/wiremock
+    image: wiremock/wiremock:3.9.2
     ports:
       - 8090:8080
     volumes:
@@ -50,7 +50,7 @@ services:
 
   ############## KAFKA AND VISUALIZATION ##############
   kafka:
-    image: apache/kafka-native
+    image: apache/kafka-native:3.9.0
     ports:
       - 9092:9092
     environment:
@@ -72,13 +72,13 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafka-topic-creator:
-    image: apache/kafka
+    image: apache/kafka:3.9.0
     command: /opt/kafka/bin/kafka-topics.sh --create --topic products --partitions 1 --replication-factor 1 --bootstrap-server kafka:9093
     depends_on:
       - kafka
 
   kafka-ui:
-    image: ghcr.io/kafbat/kafka-ui:latest
+    image: ghcr.io/kafbat/kafka-ui:01aa8ab36387c5f1d66d098e71488bfb0eb5f39c
     ports:
       - 8080:8080
     environment:
