@@ -7,8 +7,10 @@ describe("Product creation", () => {
   beforeAll(async () => {
     console.log("Starting containers");
 
-    postgresContainer = await createAndBootstrapPostgresContainer();
-    kafkaContainer = await createAndBootstrapKafkaContainer();
+    await Promise.all([
+      createAndBootstrapPostgresContainer().then(c => postgresContainer = c),
+      createAndBootstrapKafkaContainer().then(c => kafkaContainer = c)
+    ]);
   }, 120000); // Making this very long in case the images need to be pulled
 
   beforeAll(async () => {
