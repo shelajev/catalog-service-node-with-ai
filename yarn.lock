@@ -1675,19 +1675,26 @@
     "@smithy/types" "^3.5.0"
     tslib "^2.6.2"
 
-"@testcontainers/kafka@^10.13.2":
-  version "10.13.2"
-  resolved "https://registry.yarnpkg.com/@testcontainers/kafka/-/kafka-10.13.2.tgz#316abb0bbaece3fbcd1c356c0f17bb69e5cadc53"
-  integrity sha512-CghkmRjL/4s1LBezE4ns7gTXkGZl+BzneivA12HcgmN06uojKnIamD6ILOO+b5igKqyS68LePh1RGtTpYOS0Wg==
+"@testcontainers/kafka@^10.15.0":
+  version "10.15.0"
+  resolved "https://registry.yarnpkg.com/@testcontainers/kafka/-/kafka-10.15.0.tgz#0334c48ab50fdf0b1ae95395cae027cea2288eeb"
+  integrity sha512-jkg7andFESIzz9nMfLIumjDj+eu0fTHKdiMiRy6Doq8INEkcR+oeuYVuqrGA0JQW8rzKMCl3Rf4VAvITQKrXlg==
   dependencies:
-    testcontainers "^10.13.2"
+    testcontainers "^10.15.0"
 
-"@testcontainers/postgresql@^10.13.2":
-  version "10.13.2"
-  resolved "https://registry.yarnpkg.com/@testcontainers/postgresql/-/postgresql-10.13.2.tgz#476f31951446755305469827da704955e06d75b9"
-  integrity sha512-xd3u/rL8FrOBHFMu1aU+2d4sqPz9ffEb19ITtopT/tyBZWW9qCsgR6wSg0r2BJUd+2hT4UR5nR5cymi+ROkehw==
+"@testcontainers/localstack@^10.15.0":
+  version "10.15.0"
+  resolved "https://registry.yarnpkg.com/@testcontainers/localstack/-/localstack-10.15.0.tgz#129e08079d6f46be9931bcc90c7ee42ed5c9b058"
+  integrity sha512-S3Sp0sWtvpiUqFnviAeo/Q3QPHY8IT+w2ltinrW9qtGhpnNnMRccrITQ7IZX25V/apmsyxcRku2fu9fcIH31Qg==
   dependencies:
-    testcontainers "^10.13.2"
+    testcontainers "^10.15.0"
+
+"@testcontainers/postgresql@^10.15.0":
+  version "10.15.0"
+  resolved "https://registry.yarnpkg.com/@testcontainers/postgresql/-/postgresql-10.15.0.tgz#46764def8b0f297caab62be513fc0cf539bf7d8c"
+  integrity sha512-YgKT2zbbUhO3BUgGN7sbOD73wrvAqgAl63GW4XISU8m2vaKDzegnialUPdMsLKJFylL8AySifYaAgQWojmE+5A==
+  dependencies:
+    testcontainers "^10.15.0"
 
 "@types/babel__core@^7.1.14":
   version "7.20.5"
@@ -4379,10 +4386,10 @@ test-exclude@^6.0.0:
     glob "^7.1.4"
     minimatch "^3.0.4"
 
-testcontainers@^10.13.2:
-  version "10.13.2"
-  resolved "https://registry.yarnpkg.com/testcontainers/-/testcontainers-10.13.2.tgz#155eb8e884adca4d93ee4fd9639a96d2a30c2e88"
-  integrity sha512-LfEll+AG/1Ks3n4+IA5lpyBHLiYh/hSfI4+ERa6urwfQscbDU+M2iW1qPQrHQi+xJXQRYy4whyK1IEHdmxWa3Q==
+testcontainers@^10.15.0:
+  version "10.15.0"
+  resolved "https://registry.yarnpkg.com/testcontainers/-/testcontainers-10.15.0.tgz#2b577a4ce2869d2c3d59338a146df98893e17d4e"
+  integrity sha512-fQbWIdXverYhOVS7WJk3egII1b4OtUl3C9mXIJk7Q95o5HeY/PRbAif5Gxi8tzck7Lmer0rMbq2jSbSbMyYm8Q==
   dependencies:
     "@balena/dockerignore" "^1.0.2"
     "@types/dockerode" "^3.3.29"

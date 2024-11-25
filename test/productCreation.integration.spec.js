@@ -1,29 +1,42 @@
-const { createAndBootstrapPostgresContainer, createAndBootstrapKafkaContainer } = require("./containerSupport");
-const { Kafka, logLevel } = require("kafkajs");
+const { createAndBootstrapPostgresContainer, createAndBootstrapKafkaContainer, createAndBootstrapLocalstackContainer } = require("./containerSupport");
+const { KafkaConsumer } = require("./kafkaSupport");
+
 
 describe("Product creation", () => {
-  let postgresContainer, kafkaContainer, productService, publisherService;
+  let postgresContainer, kafkaContainer, localstackContainer;
+  let kafkaConsumer;
+  let productService, publisherService;
 
   beforeAll(async () => {
     console.log("Starting containers");
 
     await Promise.all([
       createAndBootstrapPostgresContainer().then(c => postgresContainer = c),
-      createAndBootstrapKafkaContainer().then(c => kafkaContainer = c)
+      createAndBootstrapKafkaContainer().then(c => kafkaContainer = c),
+      createAndBootstrapLocalstackContainer().then(c => localstackContainer = c),
     ]);
+
+    kafkaConsumer = await new KafkaConsumer();
   }, 120000); // Making this very long in case the images need to be pulled
 
   beforeAll(async () => {
     productService = require("../src/services/ProductService");
     publisherService = require("../src/services/PublisherService");
   });
+
+  afterAll(async () => {
+    await kafkaConsumer.disconnect();
+  });
   
   afterAll(async () => {
     await productService.teardown();
     await publisherService.teardown();
 
-    await postgresContainer.stop();
-    await kafkaContainer.stop();
+    await Promise.all([
+      postgresContainer.stop(),
+      kafkaContainer.stop(),
+      localstackContainer.stop(),
+    ]);
   });
 
   it("should publish and return a product when creating a product", async () => {
@@ -43,61 +56,18 @@ describe("Product creation", () => {
   });
 
   it("should publish a Kafka message when creating a product", async () => {
-    const identifier = Math.random().toString(36).substring(7);
-    const brokers = (process.env.KAFKA_BOOTSTRAP_SERVERS || "localhost:9092").split(",");
-    const kafka = new Kafka({
-      clientId: 'test-client-' + identifier,
-      brokers,
-      logLevel: logLevel.ERROR,
-    });
+    createdProduct = await productService.createProduct({ name: "Kafka publishing test", price: 100 });
 
-    const consumer = kafka.consumer({ groupId: "test-group-" + identifier });
+    expect(createdProduct.id).toBeDefined();
+    expect(createdProduct.name).toBe("Kafka publishing test");
+    expect(createdProduct.price).toBe(100);
 
-    try {
-      await consumer.connect();
+    console.log("Created product", createdProduct);
 
-      let result = { receivedMessage : false }, createdProduct;
-      await consumer.subscribe({ topic: "products", fromBeginning: true });
-      await consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
-          const data = JSON.parse(message.value.toString());
-
-          if (data.id === createdProduct.id && data.action === "product_created") {
-            result.receivedMessage = true;
-          }
-        }
-      });
-
-      createdProduct = await productService.createProduct({ name: "Test Product", price: 100 });
-  
-      expect(createdProduct.id).toBeDefined();
-      expect(createdProduct.name).toBe("Test Product");
-      expect(createdProduct.price).toBe(100);
-
-      await waitFor(
-        () => {
-          expect(result.receivedMessage).toBe(true)
-        },
-        5000,
-      );
-    } finally {
-      await consumer.disconnect();
-    }
+    await kafkaConsumer.waitForMessage({
+      id: createdProduct.id,
+      action: "product_created",
+    });  
   }, 15000);
 
 });
-
-async function waitFor(callback, timeout, interval = 250) {
-  let timeWaited = 0;
-  while (timeWaited < timeout) {
-    try {
-      callback();
-      return;
-    } catch (e) {}
-
-    await new Promise((resolve) => setTimeout(resolve, interval));
-    timeWaited += interval;
-  }
-
-  throw new Error("Timeout waiting for callback");
-}

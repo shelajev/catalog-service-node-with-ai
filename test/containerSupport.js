@@ -1,6 +1,8 @@
 const {PostgreSqlContainer} = require("@testcontainers/postgresql");
 const {KafkaContainer} = require("@testcontainers/kafka");
+const {LocalstackContainer} = require("@testcontainers/localstack");
 const path = require("path");
+const { S3Client } = require("@aws-sdk/client-s3");
 
 async function createAndBootstrapPostgresContainer() {
   const postgresContainer = await new PostgreSqlContainer()
@@ -37,8 +39,21 @@ async function createAndBootstrapKafkaContainer() {
   return kafkaContainer;
 }
 
+async function createAndBootstrapLocalstackContainer() {
+  const localstackContainer = await new LocalstackContainer()
+    .start();
+
+  process.env.AWS_ENDPOINT_URL = localstackContainer.getConnectionUri();
+  process.env.PRODUCT_IMAGE_BUCKET_NAME = "product-images";
+
+  await localstackContainer.exec(`s3api create-bucket --bucket ${process.env.PRODUCT_IMAGE_BUCKET_NAME}`);
+
+  return localstackContainer;
+}
+
 
 module.exports = {
   createAndBootstrapPostgresContainer,
   createAndBootstrapKafkaContainer,
+  createAndBootstrapLocalstackContainer,
 };
