@@ -1,6 +1,10 @@
-# Container-supported development demo
+# Catalog Service - Node
 
-This repo provides a project to help demonstrate the idea of "container-supported development"... using containers to enhance developer productivity, even if the main app itself is _not_ in a container.
+This repo is a demo project that demonstrates all of Docker's services in a single project. Specifically, it includes the following:
+
+- A containerized development environment (in a few varieties of setup)
+- Integration testing with Testcontainers
+- Building in GitHub Actions with Docker Build Cloud
 
 ## Trying it out
 
