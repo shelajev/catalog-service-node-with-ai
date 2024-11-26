@@ -44,6 +44,8 @@ async function createAndBootstrapLocalstackContainer() {
 
   process.env.AWS_ENDPOINT_URL = localstackContainer.getConnectionUri();
   process.env.AWS_REGION = "us-east-1";
+  process.env.AWS_ACCESS_KEY_ID = "test";
+  process.env.AWS_SECRET_ACCESS_KEY = "test";
   process.env.PRODUCT_IMAGE_BUCKET_NAME = "product-images";
 
   const bucketCreateRequest = await localstackContainer.exec(
