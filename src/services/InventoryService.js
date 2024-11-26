@@ -15,7 +15,6 @@ async function getInventoryForProduct(productId) {
     const payload = await response.json();
 
     if (response.status !== 200) {
-      console.log("PAYLOAD", payload);
       return {
         error: true,
         message: payload.message,

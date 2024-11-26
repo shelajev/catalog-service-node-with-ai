@@ -5,7 +5,8 @@
     "start": "node src/index.js",
     "dev": "nodemon --inspect src/index.js",
     "dev-container": "nodemon src/index.js",
-    "test": "DEBUG=testcontainers* NODE_OPTIONS=--dns-result-order=ipv4first jest \".*\\.spec\\.js\" --detectOpenHandles",
+    "test": "jest \"test/**/*.spec.js\" --detectOpenHandles --testPathIgnorePatterns \"test/integration/.*\\.spec\\.js\"",
+    "integration-test": "DEBUG=testcontainers* NODE_OPTIONS=--dns-result-order=ipv4first jest \"test/integration/.*\\.spec\\.js\" --detectOpenHandles",
     "test-watch": "NODE_OPTIONS=--dns-result-order=ipv4first jest --watch \"test/**/*.spec.js\" --detectOpenHandles"
   },
   "dependencies": {

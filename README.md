@@ -76,8 +76,19 @@ This project contains a few sample tests to demonstrate Testcontainer integratio
 
 3. Press play for the test you'd like to run.
 
-The *.integration.spec.js tests will use Testcontainers to launch Kafka and Postgres.
+The *.integration.spec.js tests will use Testcontainers to launch Kafka, Postgres, and LocalStack.
 
+#### Running tests via the command line
+
+Or you can run the tests using the command line:
+
+```console
+# Run only the unit tests
+$ yarn test
+
+# Run only the integration tests
+$ yarn integration-test
+```
 
 ## Additional utilities
 
