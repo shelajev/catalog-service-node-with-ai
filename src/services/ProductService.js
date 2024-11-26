@@ -57,7 +57,7 @@ async function getProductById(id) {
 }
 
 async function uploadProductImage(id, filename, buffer) {
-  return uploadFile(filename, buffer);
+  return uploadFile(id, filename, buffer);
 }
 
 module.exports = {

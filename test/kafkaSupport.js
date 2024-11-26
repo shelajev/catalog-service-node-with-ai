@@ -31,17 +31,19 @@ class KafkaConsumer {
         }
       });
 
-      this.waitForMessage = async function(matcher) {
-        if (hasMatch(this.receivedMessages, matcher)) {
-          return true;
+      this.waitForMessage = async function(matcher, timeout = 10000) {
+        const match = findMatch(this.receivedMessages, matcher);
+        if (match) {
+          return match;
         }
 
         let messages = this.receivedMessages;
         await waitFor(() => {
-          if (hasMatch(messages, matcher)) {
-            return true;
+          const match = findMatch(messages, matcher);
+          if (match) {
+            return match;
           } else throw new Error("No message found yet");
-        }, 10000);
+        }, timeout);
       }
 
       return this;
@@ -50,8 +52,8 @@ class KafkaConsumer {
   }
 }
 
-function hasMatch(objectList, subObject) {
-  return objectList.some(obj => hasMatchSingle(obj, subObject));
+function findMatch(objectList, subObject) {
+  return objectList.find(obj => hasMatchSingle(obj, subObject));
 }
 
 function hasMatchSingle(fullObject, subObject) {

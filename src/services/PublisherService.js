@@ -14,8 +14,10 @@ async function getProducer() {
     brokers: BROKER_URLS
   });
   
-  producer = kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner });
-  await producer.connect();
+  const p = kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner });
+  await p.connect();
+  
+  producer = p;
   return producer;
 }
 
@@ -28,12 +30,16 @@ async function teardown() {
 async function publishEvent(topic, event) {
   const producer = await getProducer();
 
-  await producer.send({
-    topic,
-    messages: [
-      { value: JSON.stringify(event) }
-    ]
-  });
+  try {
+    await producer.send({
+      topic,
+      messages: [
+        { value: JSON.stringify(event) }
+      ]
+    });
+  } catch (e) {
+    console.error("Failed to publish event", e);
+  }
 }
 
 module.exports = {

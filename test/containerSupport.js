@@ -46,7 +46,8 @@ async function createAndBootstrapLocalstackContainer() {
   process.env.AWS_ENDPOINT_URL = localstackContainer.getConnectionUri();
   process.env.PRODUCT_IMAGE_BUCKET_NAME = "product-images";
 
-  await localstackContainer.exec(`s3api create-bucket --bucket ${process.env.PRODUCT_IMAGE_BUCKET_NAME}`);
+  const bucketCreateRequest = await localstackContainer.exec(`awslocal s3api create-bucket --bucket ${process.env.PRODUCT_IMAGE_BUCKET_NAME}`);
+  expect(bucketCreateRequest.exitCode).toBe(0);
 
   return localstackContainer;
 }

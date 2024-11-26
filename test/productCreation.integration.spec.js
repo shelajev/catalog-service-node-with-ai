@@ -62,12 +62,20 @@ describe("Product creation", () => {
     expect(createdProduct.name).toBe("Kafka publishing test");
     expect(createdProduct.price).toBe(100);
 
-    console.log("Created product", createdProduct);
-
     await kafkaConsumer.waitForMessage({
       id: createdProduct.id,
       action: "product_created",
     });  
+  }, 15000);
+
+  it("should upload a file correctly", async () => {
+    createdProduct = await productService.uploadProductImage("123", "test.jpg", Buffer.from("test"));
+
+    await kafkaConsumer.waitForMessage({
+      action: "image_uploaded",
+      product_id: "123",
+      filename: "test.jpg",
+    });
   }, 15000);
 
 });
