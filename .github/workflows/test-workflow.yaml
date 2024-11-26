@@ -1,4 +1,4 @@
-name: Build with GHA
+name: Test and validate
 
 on:
   push: {}
