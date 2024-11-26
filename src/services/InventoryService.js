@@ -29,7 +29,7 @@ async function getInventoryForProduct(productId) {
     return {
       error: true,
       message: "Failed to get inventory",
-    }
+    };
   }
 }
 

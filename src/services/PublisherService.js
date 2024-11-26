@@ -1,4 +1,4 @@
-const { Kafka, Partitioners } = require('kafkajs')
+const { Kafka, Partitioners } = require("kafkajs");
 
 let producer;
 
@@ -7,16 +7,20 @@ async function getProducer() {
     return producer;
   }
 
-  const BROKER_URLS = (process.env.KAFKA_BOOTSTRAP_SERVERS || "localhost:9092").split(",");
+  const BROKER_URLS = (
+    process.env.KAFKA_BOOTSTRAP_SERVERS || "localhost:9092"
+  ).split(",");
 
   const kafka = new Kafka({
-    clientId: 'catalog-service',
-    brokers: BROKER_URLS
+    clientId: "catalog-service",
+    brokers: BROKER_URLS,
   });
-  
-  const p = kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner });
+
+  const p = kafka.producer({
+    createPartitioner: Partitioners.LegacyPartitioner,
+  });
   await p.connect();
-  
+
   producer = p;
   return producer;
 }
@@ -33,9 +37,7 @@ async function publishEvent(topic, event) {
   try {
     await producer.send({
       topic,
-      messages: [
-        { value: JSON.stringify(event) }
-      ]
+      messages: [{ value: JSON.stringify(event) }],
     });
   } catch (e) {
     console.error("Failed to publish event", e);

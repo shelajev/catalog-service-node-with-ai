@@ -2,7 +2,8 @@ require("dotenv").config();
 const os = require("os");
 const fs = require("fs");
 const express = require("express");
-const ProductService = require("./services/ProductService");const multer  = require('multer');
+const ProductService = require("./services/ProductService");
+const multer = require("multer");
 
 const app = express();
 app.use(express.json());
@@ -15,7 +16,8 @@ app.get("/", (req, res) => {
 app.post("/api/products", async (req, res) => {
   const newProduct = await ProductService.createProduct(req.body);
 
-  res.status(201)
+  res
+    .status(201)
     .header("Location", `/api/products/${newProduct.id}`)
     .json(newProduct);
 });
@@ -33,12 +35,12 @@ app.get("/api/products/:id", async (req, res) => {
 
 app.post("/api/products/:id/image", upload.single("file"), async (req, res) => {
   const filename = req.file.originalname;
-  const extn = filename.split('.').pop();
+  const extn = filename.split(".").pop();
   const imageName = `${req.params.id}.${extn}`;
 
   const product = await ProductService.uploadProductImage(
-    req.params.id, 
-    imageName, 
+    req.params.id,
+    imageName,
     fs.readFileSync(req.file.path),
   );
 
@@ -48,4 +50,3 @@ app.post("/api/products/:id/image", upload.single("file"), async (req, res) => {
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
-

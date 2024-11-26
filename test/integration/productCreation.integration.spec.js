@@ -1,6 +1,9 @@
-const { createAndBootstrapPostgresContainer, createAndBootstrapKafkaContainer, createAndBootstrapLocalstackContainer } = require("./containerSupport");
+const {
+  createAndBootstrapPostgresContainer,
+  createAndBootstrapKafkaContainer,
+  createAndBootstrapLocalstackContainer,
+} = require("./containerSupport");
 const { KafkaConsumer } = require("./kafkaSupport");
-
 
 describe("Product creation", () => {
   let postgresContainer, kafkaContainer, localstackContainer;
@@ -11,9 +14,13 @@ describe("Product creation", () => {
     console.log("Starting containers");
 
     await Promise.all([
-      createAndBootstrapPostgresContainer().then(c => postgresContainer = c),
-      createAndBootstrapKafkaContainer().then(c => kafkaContainer = c),
-      createAndBootstrapLocalstackContainer().then(c => localstackContainer = c),
+      createAndBootstrapPostgresContainer().then(
+        (c) => (postgresContainer = c),
+      ),
+      createAndBootstrapKafkaContainer().then((c) => (kafkaContainer = c)),
+      createAndBootstrapLocalstackContainer().then(
+        (c) => (localstackContainer = c),
+      ),
     ]);
 
     kafkaConsumer = await new KafkaConsumer();
@@ -27,7 +34,7 @@ describe("Product creation", () => {
   afterAll(async () => {
     await kafkaConsumer.disconnect();
   });
-  
+
   afterAll(async () => {
     await productService.teardown();
     await publisherService.teardown();
@@ -40,7 +47,10 @@ describe("Product creation", () => {
   });
 
   it("should publish and return a product when creating a product", async () => {
-    const product = await productService.createProduct({ name: "Test Product", price: 100 });
+    const product = await productService.createProduct({
+      name: "Test Product",
+      price: 100,
+    });
 
     expect(product.id).toBeDefined();
     expect(product.name).toBe("Test Product");
@@ -51,12 +61,15 @@ describe("Product creation", () => {
     expect(retrievedProduct.name).toBe(product.name);
     expect(retrievedProduct.inventory).toEqual({
       error: true,
-      message: "Failed to get inventory"
+      message: "Failed to get inventory",
     });
   });
 
   it("should publish a Kafka message when creating a product", async () => {
-    createdProduct = await productService.createProduct({ name: "Kafka publishing test", price: 100 });
+    createdProduct = await productService.createProduct({
+      name: "Kafka publishing test",
+      price: 100,
+    });
 
     expect(createdProduct.id).toBeDefined();
     expect(createdProduct.name).toBe("Kafka publishing test");
@@ -65,11 +78,15 @@ describe("Product creation", () => {
     await kafkaConsumer.waitForMessage({
       id: createdProduct.id,
       action: "product_created",
-    });  
+    });
   }, 15000);
 
   it("should upload a file correctly", async () => {
-    createdProduct = await productService.uploadProductImage("123", "test.jpg", Buffer.from("test"));
+    createdProduct = await productService.uploadProductImage(
+      "123",
+      "test.jpg",
+      Buffer.from("test"),
+    );
 
     await kafkaConsumer.waitForMessage({
       action: "image_uploaded",
@@ -77,5 +94,4 @@ describe("Product creation", () => {
       filename: "test.jpg",
     });
   }, 15000);
-
 });

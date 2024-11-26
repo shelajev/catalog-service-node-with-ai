@@ -5,6 +5,7 @@
     "start": "node src/index.js",
     "dev": "nodemon --inspect src/index.js",
     "dev-container": "nodemon src/index.js",
+    "prettier": "prettier --write \"**/*.js\"",
     "test": "jest \"test/**/*.spec.js\" --detectOpenHandles --testPathIgnorePatterns \"test/integration/.*\\.spec\\.js\"",
     "integration-test": "DEBUG=testcontainers* NODE_OPTIONS=--dns-result-order=ipv4first jest \"test/integration/.*\\.spec\\.js\" --detectOpenHandles",
     "test-watch": "NODE_OPTIONS=--dns-result-order=ipv4first jest --watch \"test/**/*.spec.js\" --detectOpenHandles"
@@ -25,6 +26,7 @@
     "@testcontainers/postgresql": "^10.15.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
+    "prettier": "^3.4.0",
     "testcontainers": "^10.15.0"
   },
   "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
