@@ -31,14 +31,8 @@ services:
     image: localstack/localstack:3.8.1
     ports:
       - "4566:4566"
-
-  bucket-creator:
-    image: localstack/localstack:3.8.1
-    entrypoint: []
-    command: awslocal --endpoint-url http://aws:4566 s3api create-bucket --bucket product-images
-    depends_on:
-      aws:
-        condition: service_healthy
+    post_start:
+      - command: awslocal s3api create-bucket --bucket product-images
 
   ############## MOCK INVENTORY SERVICE ##############
   mock-inventory:
