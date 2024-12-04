@@ -94,4 +94,4 @@ jobs:
           provenance: mode=max
           sbom: true
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/golden-demo-node:dbc
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/catalog-service-node:dbc
