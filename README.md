@@ -26,7 +26,6 @@ During development, containers provide the following services:
 
 ![Dev environment architecture](./dev-environment-architecture.png)
 
-
 ## Trying it out
 
 This project is configured to run with the app running either natively (using Node installed on the machine) or in a container.
@@ -37,34 +36,32 @@ This project is configured to run with the app running either natively (using No
 
 2. Start all of the application dependencies
 
-    ```console
-    docker compose up
-    ```
+   ```console
+   docker compose up
+   ```
 
 3. Install the app dependencies and start the main app with the following command:
 
-    ```console
-    yarn install
-    yarn dev
-    ```
+   ```console
+   yarn install
+   yarn dev
+   ```
 
 #### Debugging the application
 
-Once the app is running, you can start a debug session by using the **Debug** task in the "Run and Debug" panel. 
-
+Once the app is running, you can start a debug session by using the **Debug** task in the "Run and Debug" panel.
 
 ### Running completely in containers
 
-The `compose.native.yaml` file defines an additional `app` service that will run the application in the container. 
+The `compose.all-in.yaml` file defines an additional `app` service that will run the application in the container.
 
 The code is currently mounted into the app container, theoretically allowing for hot reloading. However, there is a limitation for WSL environments where the filesystem event isn't propagated, preventing nodemon from seeing the file change event.
 
-1. Start the app using Compose, but specifying the native file
+1. Start the app using Compose, but specifying the "all-in" file
 
-    ```console
-    docker compose -f compose.native.yaml
-    ```
-
+   ```console
+   docker compose -f compose.all-in.yaml
+   ```
 
 ### Running tests
 
@@ -76,7 +73,7 @@ This project contains a few sample tests to demonstrate Testcontainer integratio
 
 3. Press play for the test you'd like to run.
 
-The *.integration.spec.js tests will use Testcontainers to launch Kafka, Postgres, and LocalStack.
+The \*.integration.spec.js tests will use Testcontainers to launch Kafka, Postgres, and LocalStack.
 
 #### Running tests via the command line
 
