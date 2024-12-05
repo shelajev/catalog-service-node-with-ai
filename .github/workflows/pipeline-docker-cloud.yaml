@@ -103,4 +103,4 @@ jobs:
           provenance: mode=max
           sbom: true
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/catalog-service-node:dbc
+          tags: dockerdevrel/catalog-service-node:dbc
