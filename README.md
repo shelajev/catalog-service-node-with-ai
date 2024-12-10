@@ -6,6 +6,8 @@ This repo is a demo project that demonstrates all of Docker's services in a sing
 - Integration testing with Testcontainers
 - Building in GitHub Actions with Docker Build Cloud
 
+This project is also setup to be used for various demos. Learn more about the demo setups by using [the README in the ./demo directory](./demo/README.md).
+
 ## Application architecture
 
 This sample app provides an API that utilizes the following setup:
