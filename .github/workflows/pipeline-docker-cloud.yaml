@@ -5,6 +5,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  DOCKERHUB_ORG_NAME: dockerdevrel
+  IMAGE_NAME: catalog-service-node
+  DBC_BUILDER_NAME: dockerdevrel/demo-builder
+
 jobs:
   prettier:
     name: "Validate code formatting"
@@ -80,6 +85,8 @@ jobs:
     name: Build and push image
     needs: [unit-test, integration-test]
     runs-on: ubuntu-latest
+    outputs:
+      IMAGE_TAGS: ${{ toJSON( fromJSON(steps.meta.outputs.json).tags ) }}
 
     steps:
       - name: Checkout code
@@ -95,11 +102,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: dockerdevrel/catalog-service-node
+          images: ${{ env.DOCKERHUB_ORG_NAME }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha
-            type=ref,event=branch
-            type=ref,event=pr
+            type=ref,enable=true,event=branch,suffix=--{{sha}}
+            type=ref,enable=true,event=branch,suffix=--latest
+            type=ref,event=tag
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Set up Docker Buildx
@@ -107,7 +114,7 @@ jobs:
         with:
           version: "lab:latest"
           driver: cloud
-          endpoint: "dockerdevrel/demo-builder"
+          endpoint: ${{ env.DBC_BUILDER_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -119,3 +126,57 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  branch-deploy:
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    name: Deploy to branch environment
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do the deploy
+        run: |
+          echo "Do the deployment here. Would deploy image ${IMAGE_TAG}"
+        env:
+          IMAGE_TAG: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
+
+  stage-deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: Deploy to stage environment
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do the deploy
+        run: |
+          echo "Do the staging deployment here. Would deploy image ${IMAGE_TAG}"
+        env:
+          IMAGE_TAG: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
+      
+      - name: Update Scout environment
+        id: docker-scout-environment
+        uses: docker/scout-action@v1
+        with:
+          command: environment
+          image: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
+          environment: stage
+          organization: ${{ env.DOCKERHUB_ORG_NAME }}
+
+  prod-deploy:
+    if: github.ref_type == 'tag'
+    name: Deploy to production environment
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do the deploy
+        run: |
+          echo "Do the production deployment here. Would deploy image ${IMAGE_TAG}"
+        env:
+          IMAGE_TAG: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
+      
+      - name: Update Scout environment
+        id: docker-scout-environment
+        uses: docker/scout-action@v1
+        with:
+          command: environment
+          image: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
+          environment: production
+          organization: ${{ env.DOCKERHUB_ORG_NAME }}
