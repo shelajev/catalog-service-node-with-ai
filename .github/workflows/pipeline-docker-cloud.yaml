@@ -128,7 +128,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   branch-deploy:
-    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref_type != 'tag'
     name: Deploy to branch environment
     needs: [build]
     runs-on: ubuntu-latest
