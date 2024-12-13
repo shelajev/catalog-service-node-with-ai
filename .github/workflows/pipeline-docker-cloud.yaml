@@ -138,6 +138,7 @@ jobs:
           image: ${{ steps.meta.outputs.tags }}
           to-env: production
           write-comment: true
+          organization: ${{ env.DOCKERHUB_ORG_NAME }}
 
   branch-deploy:
     if: github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref_type != 'tag'
