@@ -128,7 +128,7 @@ jobs:
           command: quickview,compare
           image: ${{ steps.meta.outputs.tags }}
           to-env: production
-          write-comment: true
+          write-comment: false # Disabling this one since this is a duplicate workflow
           organization: ${{ env.DOCKERHUB_ORG_NAME }}
 
   branch-deploy:
