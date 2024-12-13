@@ -2,7 +2,8 @@ name: Pipeline using GHA
 
 on:
   push:
-  pull_request:
+  pull_request_target:
+    branches: ["main"]
   workflow_dispatch:
 
 env:
@@ -116,6 +117,15 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Analyze and compare image against production
+        uses: docker/scout-action@v1
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          command: quickview,compare
+          image: ${{ steps.meta.outputs.tags }}
+          to-env: production
+          write-comment: true
 
   branch-deploy:
     if: github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref_type != 'tag'
