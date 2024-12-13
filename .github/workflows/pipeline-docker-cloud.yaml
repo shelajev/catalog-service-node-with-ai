@@ -2,6 +2,10 @@ name: Pipeline using Docker cloud services
 
 on:
   push:
+    branches:
+      - main
+    tags: 
+      - '*'
   pull_request:
   workflow_dispatch:
 
@@ -85,6 +89,8 @@ jobs:
     name: Build and push image
     needs: [unit-test, integration-test]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     outputs:
       IMAGE_TAGS: ${{ toJSON( fromJSON(steps.meta.outputs.json).tags ) }}
 
@@ -107,6 +113,7 @@ jobs:
             type=ref,enable=true,event=branch,suffix=--{{sha}}
             type=ref,enable=true,event=branch,suffix=--latest
             type=ref,event=tag
+            type=ref,event=pr
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Set up Docker Buildx
@@ -120,24 +127,23 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
-          provenance: mode=max
-          sbom: true
-          push: true
+          platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
+          provenance: ${{ github.event_name != 'pull_request' && 'mode=max' }}
+          sbom: ${{ github.event_name != 'pull_request' && true }}
+          push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  branch-deploy:
-    if: github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref_type != 'tag'
-    name: Deploy to branch environment
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Do the deploy
-        run: |
-          echo "Do the deployment here. Would deploy image ${IMAGE_TAG}"
-        env:
-          IMAGE_TAG: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
+      - name: Analyze and compare image against production
+        uses: docker/scout-action@v1
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          command: quickview,compare
+          image: ${{ steps.meta.outputs.tags }}
+          to-env: production
+          write-comment: true
+          organization: ${{ env.DOCKERHUB_ORG_NAME }}
 
   stage-deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
