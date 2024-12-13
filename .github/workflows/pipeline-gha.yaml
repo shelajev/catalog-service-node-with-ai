@@ -2,6 +2,10 @@ name: Pipeline using GHA
 
 on:
   push:
+    branches:
+      - main
+    tags: 
+      - '*'
   pull_request:
   workflow_dispatch:
 
@@ -130,18 +134,6 @@ jobs:
           to-env: production
           write-comment: false # Disabling this one since this is a duplicate workflow
           organization: ${{ env.DOCKERHUB_ORG_NAME }}
-
-  branch-deploy:
-    if: github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref_type != 'tag'
-    name: Deploy to branch environment
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Do the deploy
-        run: |
-          echo "Do the deployment here. Would deploy image ${IMAGE_TAG}"
-        env:
-          IMAGE_TAG: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
 
   stage-deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
