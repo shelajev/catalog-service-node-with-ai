@@ -13,8 +13,6 @@ services:
     build:
       context: .
       target: dev
-    volumes:
-      - .:/usr/local/app
     ports:
       - 3000:3000
     environment:
@@ -25,6 +23,13 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       INVENTORY_SERVICE_BASE_URL: http://mock-inventory:8080
       PGHOST: postgres
+    develop:
+      watch:
+        - path: src
+          action: sync
+          target: /usr/local/app/src
+        - path: yarn.lock
+          action: rebuild
 
   ############## DATABASE AND VISUALIZER ##############
   postgres:

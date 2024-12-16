@@ -4,8 +4,6 @@ services:
     build:
       context: .
       target: dev
-    volumes:
-      - .:/usr/local/app
     ports:
       - 3000:3000
     environment:
@@ -16,6 +14,13 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       INVENTORY_SERVICE_BASE_URL: http://mock-inventory:8080
       PGHOST: postgres
+    develop:
+      watch:
+        - path: src
+          action: sync
+          target: /usr/local/app/src
+        - path: yarn.lock
+          action: rebuild
 
   ############## DATABASE AND VISUALIZER ##############
   postgres:
@@ -47,14 +52,8 @@ services:
     image: localstack/localstack:3.8.1
     ports:
       - "4566:4566"
-
-  bucket-creator:
-    image: localstack/localstack:3.8.1
-    entrypoint: []
-    command: awslocal --endpoint-url http://aws:4566 s3api create-bucket --bucket product-images
-    depends_on:
-      aws:
-        condition: service_healthy
+    post_start:
+      - command: awslocal --endpoint-url http://aws:4566 s3api create-bucket --bucket product-images
 
   ############## MOCK INVENTORY SERVICE ##############
   mock-inventory:
@@ -66,7 +65,7 @@ services:
 
   ############## KAFKA AND VISUALIZATION ##############
   kafka:
-    image: apache/kafka-native:3.9.0
+    image: apache/kafka:3.9.0
     environment:
       # Configure listeners for both docker and host communication
       KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
@@ -84,12 +83,8 @@ services:
 
       # Required for a single node cluster
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  kafka-topic-creator:
-    image: apache/kafka:3.9.0
-    command: /opt/kafka/bin/kafka-topics.sh --create --topic products --partitions 1 --replication-factor 1 --bootstrap-server kafka:9093
-    depends_on:
-      - kafka
+    post_start:
+      - command: /opt/kafka/bin/kafka-topics.sh --create --topic products --partitions 1 --replication-factor 1 --bootstrap-server kafka:9093
 
   kafka-ui:
     image: ghcr.io/kafbat/kafka-ui:01aa8ab36387c5f1d66d098e71488bfb0eb5f39c

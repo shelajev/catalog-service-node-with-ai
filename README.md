@@ -41,7 +41,7 @@ The code is currently mounted into the app container, theoretically allowing for
 1. Start the app using Compose.
 
    ```console
-   docker compose up -d
+   docker compose up --watch
    ```
 
 ### Developing with the app running natively
