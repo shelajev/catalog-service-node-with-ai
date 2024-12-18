@@ -50,7 +50,7 @@ jobs:
         run: yarn install
 
       - name: Run unit tests
-        run: yarn test
+        run: yarn unit-test
   
   integration-test:
     name: "Run integration tests"
