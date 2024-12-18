@@ -30,30 +30,16 @@ During development, containers provide the following services:
 
 ## Trying it out
 
-This project is configured to run with the app running in a container or natively (using Node installed on the machine).
+This project is currently configured to run all dependent services in containers and the app natively on the machine (using Node installed on the machine).
 
-### Developing with everything in containers
+To start the app, follow these steps:
 
-The `compose.yaml` file defines an `app` service that will run the application in the container.
-
-The code is currently mounted into the app container, theoretically allowing for hot reloading. However, there is a limitation for WSL environments where the filesystem event isn't propagated, preventing nodemon from seeing the file change event.
-
-1. Start the app using Compose.
-
-   ```console
-   docker compose up --watch
-   ```
-
-### Developing with the app running natively
-
-Alternatively, you can start the application by running the app natively on your machine and connecting to the app dependencies that are running in containers.
-
-1. Ensure you have Node and yarn installed on your machine.
+1. Ensure you have [Node](https://nodejs.org) and [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) installed on your machine.
 
 2. Start all of the application dependencies
 
    ```console
-   docker compose -f compose.native.yaml up
+   docker compose up
    ```
 
 3. Install the app dependencies and start the main app with the following command:
@@ -63,13 +49,13 @@ Alternatively, you can start the application by running the app natively on your
    yarn dev
    ```
 
-#### Debugging the application
+### Debugging the application
 
-Once the app is running, you can start a debug session by using the **Debug** task in the "Run and Debug" panel. This currently only works when the app is running natively on the machine.
+The project contains configuration for VS Code to enable quick debgging. Once the app is running, you can start a debug session by using the **Debug** task in the "Run and Debug" panel. This currently only works when the app is running natively on the machine.
 
 ### Running tests
 
-This project contains a few sample tests to demonstrate Testcontainer integration. To run them, follow these steps (assuming you're using Visual Studio Code):
+This project contains a few unit tests and integration tests to demonstrate Testcontainer usage. To run them, follow these steps (assuming you're using VS Code):
 
 1. Download and install the [Jest extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest#user-interface).
 
@@ -84,8 +70,11 @@ The \*.integration.spec.js tests will use Testcontainers to launch Kafka, Postgr
 Or you can run the tests using the command line:
 
 ```console
-# Run only the unit tests
+# Run all tests
 $ yarn test
+
+# Run only unit tests
+$ yarn unit-test
 
 # Run only the integration tests
 $ yarn integration-test
@@ -97,11 +86,6 @@ Once the development environment is up and running, the following URLs can be le
 
 - [http://localhost:5050](http://localhost:5050) - [pgAdmin](https://www.pgadmin.org/) to visualize the database. Login using the password `postgres` (configured in the Compose file)
 - [http://localhost:8080](http://localhost:8080) - [kafbat](https://github.com/kafbat/kafka-ui) to visualize the Kafka cluster
-
-The `compose.traefik.*` variants make the previous accessible using hostnames, instead of hard-to-remember ports.
-
-- [http://db.localhost](http://db.localhost) - [pgAdmin](https://www.pgadmin.org/) to visualize the database
-- [http://kafka.localhost](http://kafka.localhost) - [kafbat](https://github.com/kafbat/kafka-ui) to visualize the Kafka cluster
 
 ### Helper scripts
 
