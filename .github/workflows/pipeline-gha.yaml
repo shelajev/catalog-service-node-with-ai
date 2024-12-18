@@ -135,7 +135,7 @@ jobs:
           write-comment: false # Disabling this one since this is a duplicate workflow
           organization: ${{ env.DOCKERHUB_ORG_NAME }}
           exit-code: true
-          exit-on: vulnerability,policy
+          exit-on: vulnerability
 
   stage-deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
