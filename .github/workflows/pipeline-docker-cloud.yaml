@@ -155,7 +155,8 @@ jobs:
           to-env: production
           write-comment: true
           organization: ${{ env.DOCKERHUB_ORG_NAME }}
-          exit-on: vulnerability,policy
+          # TODO Update this to include policy once DBC image loading includes attestations
+          exit-on: vulnerability
 
   stage-deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
