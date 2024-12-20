@@ -1,0 +1,32 @@
+name: "Load .env Variables"
+description: "Loads environment variables from a .env file into GITHUB_ENV"
+author: "Oleg Selajev"
+
+inputs:
+  env-file-path:
+    description: "Path to the .env file"
+    required: true
+    default: "gha.env"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Read .env File and Export Variables
+      shell: bash
+      run: |
+        set -a
+        if [ -f "${{ inputs.env-file-path }}" ]; then
+          # Export variables from .env
+          source "${{ inputs.env-file-path }}"
+        
+          # Append variables to GITHUB_ENV for use in subsequent steps
+          while IFS= read -r line || [ -n "$line" ]; do
+            # Ignore empty lines and comments
+            if [[ ! "$line" =~ ^# ]] && [[ -n "$line" ]]; then
+              echo "$line" >> $GITHUB_ENV
+            fi
+          done < "${{ inputs.env-file-path }}"
+        else
+          echo "❌ .env file not found at path: ${{ inputs.env-file-path }}"
+          exit 1
+        fi
