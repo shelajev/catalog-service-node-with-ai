@@ -1,6 +1,6 @@
 name: "Load .env Variables"
 description: "Loads environment variables from a .env file into GITHUB_ENV"
-author: "Oleg Selajev"
+author: "ChatGPT"
 
 inputs:
   env-file-path:
@@ -15,6 +15,9 @@ runs:
       shell: bash
       run: |
         set -a
+        # place repo name and owner into ENV for the image name
+        echo "REPOSITORY_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
+        echo "REPOSITORY_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
         if [ -f "${{ inputs.env-file-path }}" ]; then
           # Export variables from .env
           source "${{ inputs.env-file-path }}"
