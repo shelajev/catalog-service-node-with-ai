@@ -1,4 +1,4 @@
-name: Pipeline using GHA
+name: Pipeline using GitHub Actions
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
       - '*'
   pull_request:
   workflow_dispatch:
-
 
 jobs:
   prettier:
