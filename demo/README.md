@@ -6,6 +6,16 @@ Why this instead of using other branches? Simply put, reduced maintenance. As we
 
 **It is assumed you are running the commands below from the root of the project, not from within this directory.**
 
+## End-to-end demo
+
+For an end-to-end demo, the project is slightly downgraded to use an older version of the node base image, a few minor linting issues in the Dockerfile, an older version of Express, and setup the codebase to support a "feature addition."
+
+More talking points to come soon!
+
+```console
+git apply demo/e2e.patch
+```
+
 ## Scout demo
 
 For a Scout demo, the following patch will adjust the Dockerfile to use an older base image and install an older version of Express, allowing you to demo out-of-date base images and vunlerable dependencies.
