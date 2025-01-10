@@ -121,7 +121,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKERHUB_ORG_NAME }}/${{ env.REPOSITORY_OWNER }}-${{ env.IMAGE_NAME_SUFFIX }}-gha
+          images: ${{ env.DOCKERHUB_NAMESPACE }}/${{ env.REPOSITORY_OWNER }}-${{ env.IMAGE_NAME_SUFFIX }}-gha
           tags: |
             type=ref,enable=true,event=branch,suffix=--{{sha}}
             type=ref,enable=true,event=branch,suffix=--latest
