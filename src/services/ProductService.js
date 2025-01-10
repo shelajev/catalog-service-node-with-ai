@@ -49,8 +49,8 @@ async function createProduct(product) {
     action: "product_created",
     id: newProductId,
     name: product.name,
-    price: product.price,
     upc: product.upc,
+    price: product.price,
   });
 
   return {
