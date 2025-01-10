@@ -9,11 +9,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  DOCKERHUB_ORG_NAME: dockerdevrel
-  IMAGE_NAME: catalog-service-node
-  DBC_BUILDER_NAME: dockerdevrel/demo-builder
-
 jobs:
   prettier:
     name: "Validate code formatting"
@@ -21,6 +16,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        uses: ./.github/workflows/load-env
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -40,6 +38,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        uses: ./.github/workflows/load-env
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,6 +62,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        uses: ./.github/workflows/load-env
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -98,6 +102,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Load Environment Variables
+        uses: ./.github/workflows/load-env
+
       - name: Set up containerd
         uses: docker/setup-docker-action@v4
         with:
@@ -119,7 +126,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKERHUB_ORG_NAME }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.DOCKERHUB_NAMESPACE }}/${{ env.REPOSITORY_OWNER }}-${{ env.IMAGE_NAME_SUFFIX }}
           tags: |
             type=ref,enable=true,event=branch,suffix=--{{sha}}
             type=ref,enable=true,event=branch,suffix=--latest
@@ -164,6 +171,12 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        uses: ./.github/workflows/load-env
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -191,6 +204,12 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        uses: ./.github/workflows/load-env
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
