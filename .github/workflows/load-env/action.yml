@@ -18,6 +18,14 @@ runs:
         # place repo name and owner into ENV for the image name
         echo "REPOSITORY_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
         echo "REPOSITORY_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+
+        # Don't set a prefix if this is the authoritative repository (dockersamples)
+        if [ "${REPOSITORY_NAME}" == "dockersamples" ]; then
+          echo "IMAGE_PREFIX=" >> $GITHUB_ENV
+        else
+          echo "IMAGE_PREFIX=${REPOSITORY_NAME}-" >> $GITHUB_ENV
+        fi
+
         if [ -f "${{ inputs.env-file-path }}" ]; then
           # Export variables from .env
           source "${{ inputs.env-file-path }}"
