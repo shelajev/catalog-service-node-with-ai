@@ -152,7 +152,7 @@ jobs:
           image: ${{ steps.meta.outputs.tags }}
           to-env: production
           write-comment: false # Disabling this one since this is a duplicate workflow
-          organization: ${{ env.DOCKERHUB_ORG_NAME }}
+          organization: ${{ env.DOCKERHUB_NAMESPACE }}
           # TODO Update this to include policy once DBC image loading includes attestations
           exit-on: vulnerability
 
@@ -187,7 +187,7 @@ jobs:
           command: environment
           image: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
           environment: stage
-          organization: ${{ env.DOCKERHUB_ORG_NAME }}
+          organization: ${{ env.DOCKERHUB_NAMESPACE }}
 
   prod-deploy:
     if: github.ref_type == 'tag'
@@ -220,4 +220,4 @@ jobs:
           command: environment
           image: ${{ fromJSON( needs.build.outputs.IMAGE_TAGS )[0] }}
           environment: production
-          organization: ${{ env.DOCKERHUB_ORG_NAME }}
+          organization: ${{ env.DOCKERHUB_NAMESPACE }}
