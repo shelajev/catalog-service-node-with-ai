@@ -20,10 +20,10 @@ runs:
         echo "REPOSITORY_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
 
         # Don't set a prefix if this is the authoritative repository (dockersamples)
-        if [ "${REPOSITORY_OWNER}" == "dockersamples" ]; then
+        if [ "${{ github.event.repository.name }}" == "dockersamples" ]; then
           echo "IMAGE_PREFIX=" >> $GITHUB_ENV
         else
-          echo "IMAGE_PREFIX=${REPOSITORY_OWNER}-" >> $GITHUB_ENV
+          echo "IMAGE_PREFIX=${{ github.event.repository.name }}-" >> $GITHUB_ENV
         fi
 
         if [ -f "${{ inputs.env-file-path }}" ]; then
