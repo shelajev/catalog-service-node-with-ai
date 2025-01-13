@@ -34,6 +34,14 @@
     "prettier": "^3.4.0",
     "testcontainers": "^10.15.0"
   },
+  "dependenciesMeta": {
+    "cpu-features": {
+      "built": false
+    },
+    "ssh2": {
+      "built": false
+    }
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
