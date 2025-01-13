@@ -13,7 +13,7 @@ For an end-to-end demo, the project is slightly downgraded to use an older versi
 More talking points to come soon!
 
 ```console
-git apply demo/e2e.patch
+git apply --whitespace=fix demo/e2e.patch
 ```
 
 ## Scout demo
@@ -21,5 +21,5 @@ git apply demo/e2e.patch
 For a Scout demo, the following patch will adjust the Dockerfile to use an older base image and install an older version of Express, allowing you to demo out-of-date base images and vunlerable dependencies.
 
 ```console
-git apply demo/scout.patch
+git apply --whitespace=fix demo/scout.patch
 ```
