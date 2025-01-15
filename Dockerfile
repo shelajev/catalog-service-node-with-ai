@@ -41,7 +41,7 @@ CMD ["yarn", "dev-container"]
 ###########################################################
 FROM base AS final
 ENV NODE_ENV=production
-RUN yarn install && yarn cache clean
+RUN yarn workspaces focus --production && yarn cache clean
 COPY ./src ./src
 
 EXPOSE 3000
