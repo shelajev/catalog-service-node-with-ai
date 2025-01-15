@@ -13,7 +13,8 @@ RUN npm uninstall npm -g
 # Setup a non-root user to run the app
 WORKDIR /usr/local/app
 RUN useradd -m appuser && chown -R appuser /usr/local/app
-COPY package.json yarn.lock ./
+COPY --chown=appuser:appuser package.json yarn.lock .yarnrc.yml ./
+COPY --chown=appuser:appuser .yarn ./.yarn
 RUN corepack enable
 USER appuser
 
