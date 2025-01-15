@@ -1,5 +1,5 @@
 diff --git a/Dockerfile b/Dockerfile
-index a455ded..4fb23ba 100644
+index 6ac5706..edb8f38 100644
 --- a/Dockerfile
 +++ b/Dockerfile
 @@ -5,7 +5,7 @@
@@ -11,7 +11,7 @@ index a455ded..4fb23ba 100644
  
  # Remove npm to resolve a currently known and fixable vulnerability 
  RUN npm uninstall npm -g
-@@ -27,7 +27,7 @@ USER appuser
+@@ -28,7 +28,7 @@ USER appuser
  # and automatically restart the app.
  ###########################################################
  FROM base AS dev
@@ -20,7 +20,7 @@ index a455ded..4fb23ba 100644
  RUN yarn install
  CMD ["yarn", "dev-container"]
  
-@@ -39,10 +39,10 @@ CMD ["yarn", "dev-container"]
+@@ -40,10 +40,10 @@ CMD ["yarn", "dev-container"]
  # installs only the production dependencies.
  ###########################################################
  FROM base AS final
