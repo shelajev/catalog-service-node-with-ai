@@ -3,6 +3,7 @@ const os = require("os");
 const fs = require("fs");
 const express = require("express");
 const ProductService = require("./services/ProductService");
+const PublisherService = require("./services/PublisherService");
 const multer = require("multer");
 
 const app = express();
@@ -72,4 +73,13 @@ app.post("/api/products/:id/image", upload.single("file"), async (req, res) => {
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
+});
+
+["SIGINT", "SIGTERM"].forEach((signal) => {
+  process.on(signal, async () => {
+    console.log(`Received ${signal}, shutting down...`);
+    await ProductService.teardown();
+    await PublisherService.teardown();
+    process.exit(0);
+  });
 });
