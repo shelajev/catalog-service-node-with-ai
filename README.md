@@ -45,9 +45,8 @@ To start the app, follow these steps:
 3. Install the app dependencies and start the main app with the following command:
 
    ```console
-   corepack enable
-   yarn install
-   yarn dev
+   npm install --omit=optional
+   npm run dev
    ```
 
 4. Once everything is up and running, you can open the demo client at http://localhost:5173
@@ -74,13 +73,13 @@ Or you can run the tests using the command line:
 
 ```console
 # Run all tests
-$ yarn test
+$ npm test
 
 # Run only unit tests
-$ yarn unit-test
+$ npm run unit-test
 
 # Run only the integration tests
-$ yarn integration-test
+$ npm run integration-test
 ```
 
 ## Additional utilities

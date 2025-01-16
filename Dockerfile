@@ -7,16 +7,11 @@
 ###########################################################
 FROM node:22-slim AS base
 
-# Remove npm to resolve a currently known and fixable vulnerability 
-RUN npm uninstall npm -g
-
 # Setup a non-root user to run the app
 WORKDIR /usr/local/app
 RUN useradd -m appuser && chown -R appuser /usr/local/app
-COPY --chown=appuser:appuser package.json yarn.lock .yarnrc.yml ./
-COPY --chown=appuser:appuser .yarn ./.yarn
-RUN corepack enable
 USER appuser
+COPY --chown=appuser:appuser package.json package-lock.json ./
 
 
 ###########################################################
@@ -29,7 +24,7 @@ USER appuser
 ###########################################################
 FROM base AS dev
 ENV NODE_ENV=development
-RUN yarn install
+RUN npm install
 CMD ["yarn", "dev-container"]
 
 
@@ -41,7 +36,7 @@ CMD ["yarn", "dev-container"]
 ###########################################################
 FROM base AS final
 ENV NODE_ENV=production
-RUN yarn workspaces focus --production && yarn cache clean
+RUN npm ci --production --ignore-scripts && npm cache clean --force
 COPY ./src ./src
 
 EXPOSE 3000
