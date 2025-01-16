@@ -1,3 +1,15 @@
+diff --git a/src/services/ProductService.js b/src/services/ProductService.js
+index 85b9ecb..629bea9 100644
+--- a/src/services/ProductService.js
++++ b/src/services/ProductService.js
+@@ -49,7 +49,6 @@ async function createProduct(product) {
+     action: "product_created",
+     id: newProductId,
+     name: product.name,
+-    upc: product.upc,
+     price: product.price,
+   });
+ 
 diff --git a/Dockerfile b/Dockerfile
 index 0577738..38d57d9 100644
 --- a/Dockerfile
