@@ -7,10 +7,10 @@
     "dev-container": "nodemon src/index.js",
     "prettier": "prettier --write \"**/*.js\"",
     "prettier-check": "prettier --check \"**/*.js\"",
-    "test": "jest --detectOpenHandles",
-    "unit-test": "jest --detectOpenHandles --testPathIgnorePatterns \"test/integration/.*\\.spec\\.js\"",
-    "integration-test": "jest \"test/integration/.*\\.spec\\.js\" --detectOpenHandles",
-    "test-watch": "jest --watch \"test/**/*.spec.js\" --detectOpenHandles",
+    "test": "env-cmd --file .env.node -- jest --detectOpenHandles",
+    "unit-test": "env-cmd --file .env.node -- jest --detectOpenHandles --testPathIgnorePatterns \"test/integration/.*\\.spec\\.js\"",
+    "integration-test": "env-cmd --file .env.node -- jest \"test/integration/.*\\.spec\\.js\" --detectOpenHandles",
+    "test-watch": "env-cmd --file .env.node -- jest --watch \"test/**/*.spec.js\" --detectOpenHandles",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -27,20 +27,13 @@
     "@testcontainers/kafka": "^10.15.0",
     "@testcontainers/localstack": "^10.15.0",
     "@testcontainers/postgresql": "^10.15.0",
+    "env-cmd": "^10.1.0",
     "husky": "^8.0.0",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.10",
     "nodemon": "^3.1.4",
     "prettier": "^3.4.0",
     "testcontainers": "^10.15.0"
-  },
-  "dependenciesMeta": {
-    "cpu-features": {
-      "built": false
-    },
-    "ssh2": {
-      "built": false
-    }
   },
   "husky": {
     "hooks": {
@@ -52,5 +45,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@4.5.3"
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }
