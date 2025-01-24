@@ -2,6 +2,8 @@ name: Validate demo patches
 
 on:
   push:
+    branches-ignore:
+      - "demo-**"
   pull_request:
     branches-ignore:
       - "demo-**"
