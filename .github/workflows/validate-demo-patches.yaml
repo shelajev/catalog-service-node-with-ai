@@ -3,6 +3,8 @@ name: Validate demo patches
 on:
   push:
   pull_request:
+    branches-ignore:
+      - "demo-**"
   workflow_dispatch:
 
 jobs:
