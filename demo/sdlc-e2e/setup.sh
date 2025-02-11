@@ -15,7 +15,7 @@ git branch -D main
 git checkout main
 git branch -D temp
 git pull
-git checkout -b $BRANCH_NAME
+git checkout -b main
 
 echo "==> Applying patch and creating a commit"
 git apply --whitespace=fix ${SCRIPT_DIR}/demo.patch
