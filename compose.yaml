@@ -12,7 +12,7 @@ services:
 
   ############## DATABASE AND VISUALIZER ##############
   postgres:
-    image: postgres:17.1
+    image: postgres:17.2
     ports:
       - "5432:5432"
     volumes:
