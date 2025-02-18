@@ -34,5 +34,5 @@ echo "==> Configuring DBC (if this fails, ask to be added to the dockerdevrel or
 docker buildx create --driver cloud dockerdevrel/demo-builder 2>/dev/null || true
 docker buildx use cloud-dockerdevrel-demo-builder
 
-echo "==> Configuring Scout
+echo "==> Configuring Scout"
 docker scout config organization dockerdevrel
