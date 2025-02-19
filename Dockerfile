@@ -1,44 +1,17 @@
-###########################################################
-# Stage: base
-#
-# This stage serves as the base for all of the other stages.
-# By using this stage, it provides a consistent base for both
-# the dev and prod versions of the image.
-###########################################################
-FROM node:18 AS base
-
-# Setup a non-root user to run the app
+FROM node:18-alpine AS base
 WORKDIR /usr/local/app
-RUN useradd -m appuser && chown -R appuser /usr/local/app
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && chown -R appuser:appgroup /usr/local/app
 USER appuser
-COPY --chown=appuser:appuser package.json package-lock.json ./
+COPY --chown=appuser:appgroup package.json package-lock.json ./
 
-
-###########################################################
-# Stage: dev
-#
-# This stage is used to run the application in a development
-# environment. It installs all app dependencies and will
-# start the app in a mode that will watch for file changes
-# and automatically restart the app.
-###########################################################
 FROM base AS dev
-ENV NODE_ENV development
-RUN npm install
+ENV NODE_ENV=development
+RUN --mount=type=cache,target=/root/.npm npm install
 CMD ["npm", "run", "dev-container"]
 
-
-###########################################################
-# Stage: final
-#
-# This stage serves as the final image for production. It
-# installs only the production dependencies.
-###########################################################
 FROM base AS final
-ENV NODE_ENV production
-RUN npm ci --production --ignore-scripts && npm cache clean --force
-COPY ./src ./src
-
+ENV NODE_ENV=production
+RUN --mount=type=cache,target=/root/.npm npm ci --production --ignore-scripts && npm cache clean --force
+COPY --chown=appuser:appgroup ./src ./src
 EXPOSE 3000
-
-CMD node src/index.js
+CMD ["node", "src/index.js"]
