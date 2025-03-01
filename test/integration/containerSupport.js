@@ -5,11 +5,11 @@ const path = require("path");
 
 async function createAndBootstrapPostgresContainer() {
   const postgresContainer = await new PostgreSqlContainer()
-    .withBindMounts([
+    .withCopyFilesToContainer([
       {
-        source: path.join(__dirname, "../../dev/db"),
-        target: "/docker-entrypoint-initdb.d",
-        readOnly: false,
+        source: path.join(__dirname, "../../dev/db/1-create-schema.sql"),
+        target: "/docker-entrypoint-initdb.d/1-create-schema.sql",
+        readOnly: true,
       },
     ])
     .start();
