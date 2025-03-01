@@ -3,5 +3,6 @@ CREATE TABLE products (
   name VARCHAR(255) NOT NULL,
   upc VARCHAR(12) NOT NULL UNIQUE,
   price DECIMAL(10, 2) NOT NULL,
+  description TEXT,
   has_image BOOLEAN NOT NULL DEFAULT FALSE
 );
