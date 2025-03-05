@@ -21,7 +21,9 @@
     "multer": "^1.4.5-lts.1",
     "node-fetch": "v2",
     "node-postgres": "^0.6.2",
-    "pg": "^8.13.0"
+    "pg": "^8.13.0",
+    "weaviate-client": "^3.4.0",
+    "weaviate-ts-client": "^2.2.0"
   },
   "devDependencies": {
     "@testcontainers/kafka": "^10.15.0",
@@ -33,7 +35,9 @@
     "lint-staged": "^15.2.10",
     "nodemon": "^3.1.4",
     "prettier": "^3.4.0",
-    "testcontainers": "^10.15.0"
+    "testcontainers": "^10.15.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
   },
   "husky": {
     "hooks": {
