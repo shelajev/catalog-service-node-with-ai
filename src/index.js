@@ -25,11 +25,9 @@ app.post("/api/products", async (req, res) => {
     // Validate required fields
     const { name, upc, price } = req.body;
     if (!name || !upc || !price) {
-      return res
-        .status(400)
-        .json({
-          error: "Missing required fields: name, upc, and price are required",
-        });
+      return res.status(400).json({
+        error: "Missing required fields: name, upc, and price are required",
+      });
     }
 
     const newProduct = await ProductService.createProduct(req.body);
