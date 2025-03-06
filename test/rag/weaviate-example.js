@@ -69,7 +69,7 @@ async function main() {
     .get()
     .withClassName("Question")
     .withFields("question answer category")
-    .withNearText({ concepts: ["biology"] })
+    .withNearText({ concepts: ["organs"] })
     .withLimit(2)
     .do();
 
