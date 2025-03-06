@@ -32,6 +32,7 @@
   "devDependencies": {
     "@testcontainers/kafka": "^10.15.0",
     "@testcontainers/localstack": "^10.15.0",
+    "@testcontainers/ollama": "^10.18.0",
     "@testcontainers/postgresql": "^10.15.0",
     "env-cmd": "^10.1.0",
     "husky": "^8.0.0",

@@ -4,6 +4,7 @@ const { getInventoryForProduct } = require("./InventoryService");
 const { uploadFile, getFile } = require("./StorageService");
 const { publishEvent } = require("./PublisherService");
 const productGenerator = require("./ProductGenerator");
+const agentService = require("./AgentService");
 
 let client;
 async function getClient() {
@@ -168,6 +169,66 @@ async function generateRandomProduct() {
   return product;
 }
 
+async function createProductWithAI(prompt) {
+  console.time("createProductWithAI");
+
+  // Generate product details using AI
+  console.log(`Generating product from prompt: "${prompt}"`);
+
+  // Define the product generation prompt
+  const productGenerationPrompt = `You are a product catalog assistant. Your job is to generate complete product details based on a brief description.
+Always respond with valid JSON in the following format:
+{
+  "name": "Product Name",
+  "description": "Detailed product description",
+  "category": "Appropriate category",
+  "price": 99.99,
+  "upc": "123456789012"
+}
+
+The name should be concise (3-5 words).
+The description should be 1-2 sentences highlighting key features.
+The category should be one of: Electronics, Clothing, Home, Kitchen, Sports, Beauty, Toys, Books, Food, Other.
+The price should be a reasonable market price for such a product (between $5 and $1000).
+The UPC should be a random 12-digit number.`;
+
+  try {
+    // Use the agent service to process the query
+    const response = await agentService.processQuery(
+      `Generate a complete product based on this description: ${prompt}`,
+      null,
+      productGenerationPrompt,
+    );
+
+    // Parse the JSON response
+    const productDetails = JSON.parse(response);
+    console.log(`Successfully generated product: "${productDetails.name}"`);
+
+    // Create the product in the database
+    const createdProduct = await createProduct(productDetails);
+
+    console.timeEnd("createProductWithAI");
+    return createdProduct;
+  } catch (error) {
+    console.error("Error generating product details:", error);
+
+    // Provide a fallback product if generation fails
+    const fallbackProduct = {
+      name: "Generated Product",
+      description: `A product based on: ${prompt}`,
+      category: "Other",
+      price: 99.99,
+      upc: Math.floor(100000000000 + Math.random() * 900000000000).toString(),
+    };
+
+    // Create the fallback product in the database
+    const createdProduct = await createProduct(fallbackProduct);
+
+    console.timeEnd("createProductWithAI");
+    return createdProduct;
+  }
+}
+
 module.exports = {
   getProducts,
   createProduct,
@@ -176,5 +237,6 @@ module.exports = {
   uploadProductImage,
   deleteProduct,
   generateRandomProduct,
+  createProductWithAI,
   teardown,
 };

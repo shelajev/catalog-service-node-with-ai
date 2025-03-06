@@ -1,6 +1,7 @@
 const { PostgreSqlContainer } = require("@testcontainers/postgresql");
 const { KafkaContainer } = require("@testcontainers/kafka");
 const { LocalstackContainer } = require("@testcontainers/localstack");
+const { createAndBootstrapOllamaContainer } = require("./ollamaSupport");
 const path = require("path");
 
 async function createAndBootstrapPostgresContainer() {
@@ -60,4 +61,5 @@ module.exports = {
   createAndBootstrapPostgresContainer,
   createAndBootstrapKafkaContainer,
   createAndBootstrapLocalstackContainer,
+  createAndBootstrapOllamaContainer,
 };

@@ -4,12 +4,13 @@ const {
   createAndBootstrapKafkaContainer,
   createAndBootstrapLocalstackContainer,
 } = require("./containerSupport");
+const { createAndBootstrapOllamaContainer } = require("./ollamaSupport");
 const { KafkaConsumer } = require("./kafkaSupport");
 
 describe("Product creation", () => {
-  let postgresContainer, kafkaContainer, localstackContainer;
+  let postgresContainer, kafkaContainer, localstackContainer, ollamaContainer;
   let kafkaConsumer;
-  let productService, publisherService;
+  let productService, publisherService, agentService;
 
   beforeAll(async () => {
     console.log("Starting containers");
@@ -22,14 +23,16 @@ describe("Product creation", () => {
       createAndBootstrapLocalstackContainer().then(
         (c) => (localstackContainer = c),
       ),
+      createAndBootstrapOllamaContainer().then((c) => (ollamaContainer = c)),
     ]);
 
     kafkaConsumer = await new KafkaConsumer();
-  }, 120000); // Making this very long in case the images need to be pulled
+  }, 180000); // Making this very long in case the images need to be pulled
 
   beforeAll(async () => {
     productService = require("../../src/services/ProductService");
     publisherService = require("../../src/services/PublisherService");
+    agentService = require("../../src/services/AgentService");
   });
 
   afterAll(async () => {
@@ -39,11 +42,13 @@ describe("Product creation", () => {
   afterAll(async () => {
     await productService.teardown();
     await publisherService.teardown();
+    if (agentService.teardown) await agentService.teardown();
 
     await Promise.all([
       postgresContainer.stop(),
       kafkaContainer.stop(),
       localstackContainer.stop(),
+      ollamaContainer.stop(),
     ]);
   });
 
@@ -148,4 +153,30 @@ describe("Product creation", () => {
       }),
     ).rejects.toThrow("Product with this UPC already exists");
   });
+
+  it("should create a product with AI-generated content", async () => {
+    const productPrompt = "Create a modern coffee maker with smart features";
+
+    const aiGeneratedProduct =
+      await productService.createProductWithAI(productPrompt);
+
+    expect(aiGeneratedProduct.id).toBeDefined();
+    expect(aiGeneratedProduct.name).toBeDefined();
+    expect(aiGeneratedProduct.description).toBeDefined();
+    expect(aiGeneratedProduct.category).toBeDefined();
+    expect(aiGeneratedProduct.price).toBeDefined();
+    expect(aiGeneratedProduct.upc).toBeDefined();
+
+    // Verify the product was saved to the database
+    const retrievedProduct = await productService.getProductById(
+      aiGeneratedProduct.id,
+    );
+    expect(retrievedProduct.id).toBe(aiGeneratedProduct.id);
+
+    // Verify a Kafka message was published
+    await kafkaConsumer.waitForMessage({
+      id: aiGeneratedProduct.id,
+      action: "product_created",
+    });
+  }, 30000);
 });

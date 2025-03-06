@@ -5,25 +5,23 @@ const { RunnableSequence } = require("@langchain/core/runnables");
 
 class AgentService {
   constructor() {
-    // Initialize the Ollama model with llama3.2:3b
+    // Initialize the Ollama model with environment variables
+    const ollamaApiUrl = process.env.OLLAMA_API_URL || "http://localhost:11434";
+    const ollamaModel = process.env.OLLAMA_MODEL || "llama3.2:3b";
+
     this.model = new Ollama({
-      baseUrl: "http://localhost:11434", // Ollama API endpoint
-      model: "llama3.2:3b", // Model name
+      baseUrl: ollamaApiUrl,
+      model: ollamaModel,
       temperature: 0.7, // Controls randomness (0 = deterministic, 1 = creative)
     });
-
-    // Default system prompt template
-    this.defaultSystemPrompt = `You are a helpful AI assistant that provides information about products.
-Your goal is to help users understand product features and benefits.
-Be concise, accurate, and helpful in your responses.`;
   }
 
   /**
    * Create a prompt chain with system prompt and user input
-   * @param {string} systemPrompt - The system prompt to use (or default if not provided)
+   * @param {string} systemPrompt - The system prompt to use
    * @returns {RunnableSequence} - The prompt chain
    */
-  createPromptChain(systemPrompt = this.defaultSystemPrompt) {
+  createPromptChain() {
     // Create a prompt template that combines system prompt and user input
     const promptTemplate = PromptTemplate.fromTemplate(`
 System: {system}
@@ -40,23 +38,24 @@ User: {query}
   }
 
   /**
-   * Process a query about a product
+   * Process a query with a system prompt
    * @param {string} query - The user's query
    * @param {Object} product - Optional product object to include in context
-   * @param {string} systemPrompt - Optional custom system prompt
+   * @param {string} systemPrompt - The system prompt to use
    * @returns {Promise<string>} - The agent's response
    */
-  async processQuery(query, product = null, systemPrompt = null) {
+  async processQuery(query, product = null, systemPrompt) {
+    if (!systemPrompt) {
+      throw new Error("System prompt is required");
+    }
+
     console.log(
       `Starting AI processing for query: "${query.substring(0, 50)}${query.length > 50 ? "..." : ""}"`,
     );
     console.time("AgentService:processQuery");
     try {
-      // Use default system prompt if none provided
-      const finalSystemPrompt = systemPrompt || this.defaultSystemPrompt;
-
       // Create the chain
-      const chain = this.createPromptChain(finalSystemPrompt);
+      const chain = this.createPromptChain();
 
       // Prepare the input
       let finalQuery = query || "Tell me about this product";
@@ -71,7 +70,7 @@ User: {query}
       console.log(`Sending request to AI model...`);
       console.time("AgentService:modelInvoke");
       const response = await chain.invoke({
-        system: finalSystemPrompt,
+        system: systemPrompt,
         query: finalQuery,
       });
       console.timeEnd("AgentService:modelInvoke");
@@ -83,16 +82,6 @@ User: {query}
       console.error("Error processing query with agent:", error);
       console.timeEnd("AgentService:processQuery");
       throw new Error(`Failed to process query: ${error.message}`);
-    }
-  }
-
-  /**
-   * Update the default system prompt
-   * @param {string} newSystemPrompt - The new system prompt to use
-   */
-  updateDefaultSystemPrompt(newSystemPrompt) {
-    if (newSystemPrompt && typeof newSystemPrompt === "string") {
-      this.defaultSystemPrompt = newSystemPrompt;
     }
   }
 }
