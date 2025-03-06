@@ -4,7 +4,7 @@ import { ProductRow } from "./ProductRow";
 
 function App() {
   const [lastRequest, setLastRequest] = useState(null);
-  const [catalog, setCatalog] = useState(null);
+  const [catalog, setCatalog] = useState([]);
 
   const fetchCatalog = useCallback(() => {
     fetch("/api/products")
@@ -23,6 +23,7 @@ function App() {
   const createProduct = useCallback(() => {
     const body = {
       name: "New Product",
+      description: "A brand new product in our catalog",
       price: 100,
       upc: 100000000000 + catalog.length + 1,
     };
@@ -58,6 +59,7 @@ function App() {
                 <tr>
                   <th>ID</th>
                   <th>Name</th>
+                  <th>Description</th>
                   <th>Price</th>
                   <th>UPC</th>
                   <th>Inventory</th>

@@ -40,8 +40,8 @@ async function createProduct(product) {
     throw new Error("Product with this UPC already exists");
 
   const result = await client.query(
-    "INSERT INTO products (name, upc, price, description) VALUES ($1, $2, $3, $4) RETURNING id",
-    [product.name, product.upc, product.price, product.description || null],
+    "INSERT INTO products (name, description, upc, price) VALUES ($1, $2, $3, $4) RETURNING id",
+    [product.name, product.description, product.upc, product.price || null],
   );
   const newProductId = result.rows[0].id;
 
@@ -49,9 +49,9 @@ async function createProduct(product) {
     action: "product_created",
     id: newProductId,
     name: product.name,
-    price: product.price,
     description: product.description,
-    // upc: product.upc,
+    price: product.price,
+    upc: product.upc,
   });
 
   return {

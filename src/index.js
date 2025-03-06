@@ -3,7 +3,6 @@ const os = require("os");
 const fs = require("fs");
 const express = require("express");
 const ProductService = require("./services/ProductService");
-const RecommendationService = require("./services/RecommendationService");
 const PublisherService = require("./services/PublisherService");
 const multer = require("multer");
 
