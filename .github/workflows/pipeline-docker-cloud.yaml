@@ -86,6 +86,8 @@ jobs:
         uses: atomicjar/testcontainers-cloud-setup-action@v1
         with:
           token: ${{ secrets.TC_CLOUD_TOKEN }}
+        env:
+          TC_CLOUD_DISCOVERY_ENDPOINT: ${{ secrets.TC_CLOUD_DISCOVERY_ENDPOINT }}
 
       - name: Run integration tests
         run: npm run integration-test
