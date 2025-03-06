@@ -20,6 +20,7 @@ Always respond with valid JSON in the format:
    * @returns {Promise<Object>} - A recommended product
    */
   async generateRecommendation(product) {
+    console.time(`ProductRecommender:generateRecommendation:${product.id}`);
     if (!product) {
       throw new Error("Product is required to generate a recommendation");
     }
@@ -28,13 +29,16 @@ Always respond with valid JSON in the format:
 Make sure your recommendation is realistic and complementary to the original product.`;
 
     try {
+      console.time(`ProductRecommender:agentService:${product.id}`);
       const response = await agentService.processQuery(
         query,
         product,
         this.systemPrompt,
       );
+      console.timeEnd(`ProductRecommender:agentService:${product.id}`);
 
       // Parse the JSON response
+      console.time(`ProductRecommender:parseResponse:${product.id}`);
       const recommendation = JSON.parse(response);
 
       // Add additional fields
@@ -52,12 +56,19 @@ Make sure your recommendation is realistic and complementary to the original pro
       if (isNaN(recommendation.price)) {
         recommendation.price = Math.floor(Math.random() * 995) + 5;
       }
+      console.timeEnd(`ProductRecommender:parseResponse:${product.id}`);
 
+      console.timeEnd(
+        `ProductRecommender:generateRecommendation:${product.id}`,
+      );
       return recommendation;
     } catch (error) {
       console.error("Error generating recommendation:", error);
 
       // Fallback to a simple recommendation if LLM fails
+      console.timeEnd(
+        `ProductRecommender:generateRecommendation:${product.id}`,
+      );
       return this.createFallbackRecommendation(product);
     }
   }

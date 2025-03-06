@@ -58,6 +58,7 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
    * @returns {Promise<Object>} A product object with name, description, price, and UPC
    */
   async generateRandomProduct() {
+    console.time("ProductGenerator:generateRandomProduct");
     const randomCategory = this.getRandomCategory();
     const randomPrice = this.generateRandomPrice();
     const randomUPC = this.generateRandomUPC();
@@ -66,33 +67,39 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
     const userPrompt = this.formatUserPrompt(randomCategory);
 
     // Use the agent service to generate product details
+    console.time("ProductGenerator:agentService");
     const response = await agentService.processQuery(
       userPrompt,
       null,
       this.systemPrompt,
     );
+    console.timeEnd("ProductGenerator:agentService");
 
     try {
       // Parse the response to get name and description
       const productDetails = JSON.parse(response);
 
-      return {
+      const result = {
         name: productDetails.name,
         description: productDetails.description,
         category: randomCategory,
         price: randomPrice,
         upc: randomUPC,
       };
+      console.timeEnd("ProductGenerator:generateRandomProduct");
+      return result;
     } catch (error) {
       console.error("Error parsing AI response:", error);
       // Fallback in case parsing fails
-      return {
+      const fallback = {
         name: `${randomCategory} Item`,
         description: `A quality product in the ${randomCategory} category.`,
         category: randomCategory,
         price: randomPrice,
         upc: randomUPC,
       };
+      console.timeEnd("ProductGenerator:generateRandomProduct");
+      return fallback;
     }
   }
 

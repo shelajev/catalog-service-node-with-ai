@@ -47,6 +47,7 @@ User: {query}
    * @returns {Promise<string>} - The agent's response
    */
   async processQuery(query, product = null, systemPrompt = null) {
+    console.time("AgentService:processQuery");
     try {
       // Use default system prompt if none provided
       const finalSystemPrompt = systemPrompt || this.defaultSystemPrompt;
@@ -63,14 +64,18 @@ User: {query}
       }
 
       // Invoke the chain
+      console.time("AgentService:modelInvoke");
       const response = await chain.invoke({
         system: finalSystemPrompt,
         query: finalQuery,
       });
+      console.timeEnd("AgentService:modelInvoke");
 
+      console.timeEnd("AgentService:processQuery");
       return response;
     } catch (error) {
       console.error("Error processing query with agent:", error);
+      console.timeEnd("AgentService:processQuery");
       throw new Error(`Failed to process query: ${error.message}`);
     }
   }

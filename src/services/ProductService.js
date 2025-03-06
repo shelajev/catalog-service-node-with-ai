@@ -30,6 +30,7 @@ async function getProducts() {
 }
 
 async function createProduct(product) {
+  console.time("createProduct");
   const client = await getClient();
 
   const existingProduct = await client.query(
@@ -40,6 +41,7 @@ async function createProduct(product) {
   if (existingProduct.rows.length > 0)
     throw new Error("Product with this UPC already exists");
 
+  console.time("createProduct:dbInsert");
   const result = await client.query(
     "INSERT INTO products (name, description, category, upc, price) VALUES ($1, $2, $3, $4, $5) RETURNING id",
     [
@@ -50,8 +52,11 @@ async function createProduct(product) {
       product.price || null,
     ],
   );
+  console.timeEnd("createProduct:dbInsert");
+
   const newProductId = result.rows[0].id;
 
+  console.time("createProduct:publishEvent");
   publishEvent("products", {
     action: "product_created",
     id: newProductId,
@@ -61,7 +66,9 @@ async function createProduct(product) {
     price: product.price,
     upc: product.upc,
   });
+  console.timeEnd("createProduct:publishEvent");
 
+  console.timeEnd("createProduct");
   return {
     ...product,
     id: newProductId,
@@ -101,7 +108,10 @@ async function uploadProductImage(id, buffer) {
 }
 
 async function generateRandomProduct() {
-  return productGenerator.generateRandomProduct();
+  console.time("generateRandomProduct");
+  const product = await productGenerator.generateRandomProduct();
+  console.timeEnd("generateRandomProduct");
+  return product;
 }
 
 module.exports = {
