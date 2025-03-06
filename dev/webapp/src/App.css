@@ -66,3 +66,27 @@ td img {
 .full-width-table {
   width: 100%;
 }
+
+.save-recommendation {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.save-recommendation:hover {
+  background-color: #45a049;
+}
+
+.save-recommendation:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

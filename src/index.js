@@ -124,6 +124,105 @@ app.get("/api/recommendations", async (req, res) => {
   }
 });
 
+// Endpoint to save a recommendation
+app.post("/api/recommendations", async (req, res) => {
+  try {
+    const { sourceProductId, recommendedProductId } = req.body;
+
+    if (!sourceProductId || !recommendedProductId) {
+      return res.status(400).json({
+        error: "Both sourceProductId and recommendedProductId are required",
+      });
+    }
+
+    // Parse IDs to integers, handling both string and number inputs
+    const sourceId = parseInt(sourceProductId, 10);
+    const recommendedId = parseInt(recommendedProductId, 10);
+
+    if (isNaN(sourceId) || isNaN(recommendedId)) {
+      return res.status(400).json({
+        error: "Invalid product IDs",
+      });
+    }
+
+    const savedRecommendation = await RecommendationService.saveRecommendation(
+      sourceId,
+      recommendedId,
+    );
+
+    res.status(201).json(savedRecommendation);
+  } catch (error) {
+    console.error("Error saving recommendation:", error);
+    res
+      .status(error.message.includes("not found") ? 404 : 500)
+      .json({ error: error.message });
+  }
+});
+
+// Endpoint to get all saved recommendations
+app.get("/api/saved-recommendations", async (req, res) => {
+  try {
+    const savedRecommendations =
+      await RecommendationService.getSavedRecommendations();
+    res.json(savedRecommendations);
+  } catch (error) {
+    console.error("Error getting saved recommendations:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint to save a recommended product
+app.post("/api/recommended-products", async (req, res) => {
+  try {
+    const { sourceProductId, recommendedProduct } = req.body;
+
+    if (!sourceProductId || !recommendedProduct) {
+      return res.status(400).json({
+        error: "Both sourceProductId and recommendedProduct are required",
+      });
+    }
+
+    // Validate the recommended product has required fields
+    if (!recommendedProduct.name || !recommendedProduct.description) {
+      return res.status(400).json({
+        error: "Recommended product must have at least a name and description",
+      });
+    }
+
+    // Parse source ID to integer
+    const sourceId = parseInt(sourceProductId, 10);
+
+    if (isNaN(sourceId)) {
+      return res.status(400).json({
+        error: "Invalid source product ID",
+      });
+    }
+
+    const savedRecommendation =
+      await RecommendationService.saveRecommendedProduct(
+        sourceId,
+        recommendedProduct,
+      );
+
+    res.status(201).json(savedRecommendation);
+  } catch (error) {
+    console.error("Error saving recommended product:", error);
+
+    // Provide more detailed error messages
+    let statusCode = 500;
+    let errorMessage = error.message;
+
+    if (error.message.includes("not found")) {
+      statusCode = 404;
+    } else if (error.message.includes("already exists")) {
+      statusCode = 409;
+      errorMessage = "This product already exists in the database";
+    }
+
+    res.status(statusCode).json({ error: errorMessage });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
@@ -133,6 +232,7 @@ app.listen(3000, () => {
     console.log(`Received ${signal}, shutting down...`);
     await ProductService.teardown();
     await PublisherService.teardown();
+    await RecommendationService.teardown();
     process.exit(0);
   });
 });

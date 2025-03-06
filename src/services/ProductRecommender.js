@@ -79,11 +79,16 @@ Make sure your recommendation is realistic and complementary to the original pro
   }
 
   /**
-   * Generate a random UPC (12 digits)
+   * Generate a random UPC (12 digits) with timestamp to ensure uniqueness
    * @returns {string} A random UPC
    */
   generateRandomUPC() {
-    return (Math.floor(Math.random() * 900000000000) + 100000000000).toString();
+    // Use timestamp as part of the UPC to ensure uniqueness
+    const timestamp = Date.now().toString().slice(-10);
+    const randomPart = Math.floor(Math.random() * 100000)
+      .toString()
+      .padStart(5, "0");
+    return timestamp.slice(0, 7) + randomPart;
   }
 
   /**
