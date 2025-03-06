@@ -22,15 +22,11 @@ app.get("/api/products", async (req, res) => {
 
 app.post("/api/products", async (req, res) => {
   try {
-    // Validate required fields
-    const { name, upc, price } = req.body;
-    if (!name || !upc || !price) {
-      return res.status(400).json({
-        error: "Missing required fields: name, upc, and price are required",
-      });
-    }
+    // Generate a random product instead of requiring details from the frontend
+    const randomProduct = await ProductService.generateRandomProduct();
 
-    const newProduct = await ProductService.createProduct(req.body);
+    // Create the product in the database
+    const newProduct = await ProductService.createProduct(randomProduct);
 
     res
       .status(201)

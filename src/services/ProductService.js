@@ -3,6 +3,7 @@ const { Client } = require("pg");
 const { getInventoryForProduct } = require("./InventoryService");
 const { uploadFile, getFile } = require("./StorageService");
 const { publishEvent } = require("./PublisherService");
+const productGenerator = require("./ProductGenerator");
 
 let client;
 async function getClient() {
@@ -92,11 +93,16 @@ async function uploadProductImage(id, buffer) {
   await client.query("UPDATE products SET has_image=TRUE WHERE id=$1", [id]);
 }
 
+async function generateRandomProduct() {
+  return productGenerator.generateRandomProduct();
+}
+
 module.exports = {
   getProducts,
   createProduct,
   getProductById,
   getProductImage,
   uploadProductImage,
+  generateRandomProduct,
   teardown,
 };

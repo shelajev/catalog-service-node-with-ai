@@ -22,19 +22,12 @@ function App() {
   }, []);
 
   const createProduct = useCallback(() => {
-    const body = {
-      name: "New Product",
-      description: "A brand new product in our catalog",
-      price: 100,
-      upc: 100000000000 + catalog.length + 1,
-    };
-
     fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({}),
     }).then(fetchCatalog);
-  }, [catalog, fetchCatalog]);
+  }, [fetchCatalog]);
 
   const addRecommendation = useCallback(
     (product) => {
