@@ -5,7 +5,7 @@ async function createAndBootstrapOllamaContainer() {
   const ollamaContainer = await new OllamaContainer().start();
 
   // Set environment variables for the Ollama API
-  process.env.OLLAMA_API_URL = ollamaContainer.getConnectionUrl();
+  process.env.OLLAMA_API_URL = ollamaContainer.getEndpoint();
   process.env.OLLAMA_MODEL = "llama3.2:3b";
 
   console.log(`Ollama container started at ${process.env.OLLAMA_API_URL}`);

@@ -22,7 +22,7 @@ describe("Recommendation Integration Tests", () => {
 
   beforeEach(async () => {
     // Clear the database before each test
-    const client = await require("pg").Client();
+    const client = new require("pg").Client();
     await client.connect();
     await client.query("DELETE FROM products");
     await client.end();

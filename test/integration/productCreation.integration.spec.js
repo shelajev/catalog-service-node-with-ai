@@ -37,7 +37,7 @@ describe("Product creation", () => {
 
   afterAll(async () => {
     await kafkaConsumer.disconnect();
-  });
+  }, 30000);
 
   afterAll(async () => {
     await productService.teardown();
