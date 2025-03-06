@@ -68,6 +68,7 @@ function App() {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Description</th>
+                <th>Category</th>
                 <th>Price</th>
               </tr>
             </thead>
@@ -77,6 +78,7 @@ function App() {
                   <td>{product.id}</td>
                   <td>{product.name}</td>
                   <td>{product.description}</td>
+                  <td>{product.category}</td>
                   <td>{product.price}</td>
                 </tr>
               ))}
@@ -102,6 +104,7 @@ function App() {
                   <th>ID</th>
                   <th>Name</th>
                   <th>Description</th>
+                  <th>Category</th>
                   <th>Price</th>
                   <th>UPC</th>
                   <th>Inventory</th>

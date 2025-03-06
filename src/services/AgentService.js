@@ -1,7 +1,7 @@
-const { Ollama } = require("langchain/llms/ollama");
-const { PromptTemplate } = require("langchain/prompts");
-const { StringOutputParser } = require("langchain/schema/output_parser");
-const { RunnableSequence } = require("langchain/schema/runnable");
+const { Ollama } = require("@langchain/ollama");
+const { PromptTemplate } = require("@langchain/core/prompts");
+const { StringOutputParser } = require("@langchain/core/output_parsers");
+const { RunnableSequence } = require("@langchain/core/runnables");
 
 class AgentService {
   constructor() {

@@ -79,6 +79,7 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
       return {
         name: productDetails.name,
         description: productDetails.description,
+        category: randomCategory,
         price: randomPrice,
         upc: randomUPC,
       };
@@ -88,6 +89,7 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
       return {
         name: `${randomCategory} Item`,
         description: `A quality product in the ${randomCategory} category.`,
+        category: randomCategory,
         price: randomPrice,
         upc: randomUPC,
       };

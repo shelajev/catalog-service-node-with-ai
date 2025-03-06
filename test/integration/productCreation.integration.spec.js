@@ -50,17 +50,21 @@ describe("Product creation", () => {
   it("should publish and return a product when creating a product", async () => {
     const product = await productService.createProduct({
       name: "Test Product",
+      description: "A test product",
+      category: "Test",
       price: 100,
       upc: "100000000001",
     });
 
     expect(product.id).toBeDefined();
     expect(product.name).toBe("Test Product");
+    expect(product.category).toBe("Test");
     expect(product.price).toBe(100);
 
     const retrievedProduct = await productService.getProductById(product.id);
     expect(retrievedProduct.id).toBe(product.id);
     expect(retrievedProduct.name).toBe(product.name);
+    expect(retrievedProduct.category).toBe("Test");
     expect(retrievedProduct.inventory).toEqual({
       error: true,
       message: "Failed to get inventory",
@@ -70,12 +74,15 @@ describe("Product creation", () => {
   it("should publish a Kafka message when creating a product", async () => {
     createdProduct = await productService.createProduct({
       name: "Kafka publishing test",
+      description: "A test for Kafka publishing",
+      category: "Test",
       price: 100,
       upc: "100000000002",
     });
 
     expect(createdProduct.id).toBeDefined();
     expect(createdProduct.name).toBe("Kafka publishing test");
+    expect(createdProduct.category).toBe("Test");
     expect(createdProduct.price).toBe(100);
     expect(createdProduct.upc).toBe("100000000002");
 
@@ -88,6 +95,8 @@ describe("Product creation", () => {
   it("should upload a file correctly", async () => {
     createdProduct = await productService.createProduct({
       name: "Kafka publishing test",
+      description: "A test for file upload",
+      category: "Test",
       price: 100,
       upc: "100000000004",
     });
@@ -123,6 +132,8 @@ describe("Product creation", () => {
   it("doesn't allow duplicate UPCs", async () => {
     await productService.createProduct({
       name: "Kafka publishing test",
+      description: "A test for duplicate UPCs",
+      category: "Test",
       price: 100,
       upc: "100000000003",
     });
@@ -130,6 +141,8 @@ describe("Product creation", () => {
     await expect(
       productService.createProduct({
         name: "Kafka publishing test",
+        description: "Another test for duplicate UPCs",
+        category: "Test",
         price: 100,
         upc: "100000000003",
       }),
