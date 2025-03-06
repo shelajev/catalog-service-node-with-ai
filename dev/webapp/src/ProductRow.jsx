@@ -1,15 +1,16 @@
 import { useCallback, useState } from "react";
 import productImage from "./product-image.png";
 
-export function ProductRow({ product, onChange }) {
+export function ProductRow({ product, onChange, onRecommend }) {
   const [inventoryDetails, setInventoryDetails] = useState(null);
+  const [isRecommending, setIsRecommending] = useState(false);
 
   const fetchInventoryDetails = useCallback(() => {
     fetch(`/api/products/${product.id}`)
       .then((response) => response.json())
       .then(({ inventory }) => setInventoryDetails(inventory))
       .then(() => onChange());
-  }, [setInventoryDetails]);
+  }, [setInventoryDetails, product.id, onChange]);
 
   const uploadImage = useCallback(() => {
     fetch(productImage)
@@ -27,7 +28,26 @@ export function ProductRow({ product, onChange }) {
           body: formData,
         }).then(() => onChange());
       });
-  }, []);
+  }, [product.id, onChange]);
+
+  const getRecommendation = useCallback(() => {
+    setIsRecommending(true);
+    fetch(`/api/products/${product.id}/recommendations`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((recommendedProduct) => {
+        onRecommend(recommendedProduct);
+        setIsRecommending(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching recommendation:", error);
+        setIsRecommending(false);
+      });
+  }, [product.id, onRecommend]);
 
   return (
     <tr>
@@ -59,6 +79,15 @@ export function ProductRow({ product, onChange }) {
             Upload
           </button>
         )}
+      </td>
+      <td>
+        <button
+          className="smaller"
+          onClick={getRecommendation}
+          disabled={isRecommending}
+        >
+          {isRecommending ? "Loading..." : "Recommend"}
+        </button>
       </td>
     </tr>
   );

@@ -4,6 +4,7 @@ const fs = require("fs");
 const express = require("express");
 const ProductService = require("./services/ProductService");
 const PublisherService = require("./services/PublisherService");
+const RecommendationService = require("./services/RecommendationService");
 const multer = require("multer");
 
 const app = express();
