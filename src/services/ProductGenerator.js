@@ -58,8 +58,11 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
    * @returns {Promise<Object>} A product object with name, description, price, and UPC
    */
   async generateRandomProduct() {
-    console.time("ProductGenerator:generateRandomProduct");
     const randomCategory = this.getRandomCategory();
+    console.log(
+      `Starting to generate a new random product in category: ${randomCategory}...`,
+    );
+    console.time("ProductGenerator:generateRandomProduct");
     const randomPrice = this.generateRandomPrice();
     const randomUPC = this.generateRandomUPC();
 
@@ -67,6 +70,9 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
     const userPrompt = this.formatUserPrompt(randomCategory);
 
     // Use the agent service to generate product details
+    console.log(
+      `Requesting AI to generate product details for category: ${randomCategory}...`,
+    );
     console.time("ProductGenerator:agentService");
     const response = await agentService.processQuery(
       userPrompt,
@@ -86,6 +92,9 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
         price: randomPrice,
         upc: randomUPC,
       };
+      console.log(
+        `Successfully generated new product: "${productDetails.name}"`,
+      );
       console.timeEnd("ProductGenerator:generateRandomProduct");
       return result;
     } catch (error) {
@@ -98,6 +107,9 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
         price: randomPrice,
         upc: randomUPC,
       };
+      console.log(
+        `Using fallback product generation for category: ${randomCategory}`,
+      );
       console.timeEnd("ProductGenerator:generateRandomProduct");
       return fallback;
     }

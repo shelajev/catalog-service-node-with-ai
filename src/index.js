@@ -21,24 +21,29 @@ app.get("/api/products", async (req, res) => {
 });
 
 app.post("/api/products", async (req, res) => {
+  console.log("Starting to create a new random product...");
   console.time("API:createProduct");
   try {
     // Generate a random product instead of requiring details from the frontend
+    console.log("Generating random product details using AI...");
     console.time("API:generateRandomProduct");
     const randomProduct = await ProductService.generateRandomProduct();
     console.timeEnd("API:generateRandomProduct");
 
     // Create the product in the database
+    console.log(`Saving new product "${randomProduct.name}" to database...`);
     console.time("API:saveProduct");
     const newProduct = await ProductService.createProduct(randomProduct);
     console.timeEnd("API:saveProduct");
 
+    console.log(`Product created successfully with ID: ${newProduct.id}`);
     console.timeEnd("API:createProduct");
     res
       .status(201)
       .header("Location", `/api/products/${newProduct.id}`)
       .json(newProduct);
   } catch (error) {
+    console.error("Error creating product:", error);
     console.timeEnd("API:createProduct");
     res.status(400).json({ error: error.message });
   }
@@ -84,19 +89,28 @@ app.post("/api/products/:id/image", upload.single("file"), async (req, res) => {
 });
 
 app.get("/api/products/:id/recommendations", async (req, res) => {
-  console.time(`API:getRecommendation:${req.params.id}`);
+  const productId = req.params.id;
+  console.log(
+    `Starting to generate recommendation for product ID: ${productId}...`,
+  );
+  console.time(`API:getRecommendation:${productId}`);
   try {
     const productId = parseInt(req.params.id, 10);
 
     if (isNaN(productId)) {
+      console.log(`Invalid product ID: ${req.params.id}`);
       console.timeEnd(`API:getRecommendation:${req.params.id}`);
       return res.status(400).json({ error: "Invalid product ID" });
     }
 
+    console.log(`Requesting recommendation from recommendation service...`);
     console.time(`API:getRecommendationForProduct:${productId}`);
     const recommendation =
       await RecommendationService.getRecommendationForProduct(productId);
     console.timeEnd(`API:getRecommendationForProduct:${productId}`);
+    console.log(
+      `Recommendation generated successfully for product ID: ${productId}`,
+    );
 
     console.timeEnd(`API:getRecommendation:${req.params.id}`);
     res.json(recommendation);
@@ -187,11 +201,13 @@ app.get("/api/saved-recommendations", async (req, res) => {
 
 // Endpoint to save a recommended product
 app.post("/api/recommended-products", async (req, res) => {
+  console.log("Starting to save a recommended product...");
   console.time("API:saveRecommendedProduct");
   try {
     const { sourceProductId, recommendedProduct } = req.body;
 
     if (!sourceProductId || !recommendedProduct) {
+      console.log("Missing required fields in request");
       console.timeEnd("API:saveRecommendedProduct");
       return res.status(400).json({
         error: "Both sourceProductId and recommendedProduct are required",
@@ -200,6 +216,7 @@ app.post("/api/recommended-products", async (req, res) => {
 
     // Validate the recommended product has required fields
     if (!recommendedProduct.name || !recommendedProduct.description) {
+      console.log("Recommended product missing required fields");
       console.timeEnd("API:saveRecommendedProduct");
       return res.status(400).json({
         error: "Recommended product must have at least a name and description",
@@ -210,12 +227,16 @@ app.post("/api/recommended-products", async (req, res) => {
     const sourceId = parseInt(sourceProductId, 10);
 
     if (isNaN(sourceId)) {
+      console.log(`Invalid source product ID: ${sourceProductId}`);
       console.timeEnd("API:saveRecommendedProduct");
       return res.status(400).json({
         error: "Invalid source product ID",
       });
     }
 
+    console.log(
+      `Saving recommended product "${recommendedProduct.name}" for source product ID: ${sourceId}...`,
+    );
     console.time("API:saveRecommendedProductService");
     const savedRecommendation =
       await RecommendationService.saveRecommendedProduct(
@@ -223,6 +244,7 @@ app.post("/api/recommended-products", async (req, res) => {
         recommendedProduct,
       );
     console.timeEnd("API:saveRecommendedProductService");
+    console.log("Recommended product saved successfully");
 
     console.timeEnd("API:saveRecommendedProduct");
     res.status(201).json(savedRecommendation);

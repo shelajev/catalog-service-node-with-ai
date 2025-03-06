@@ -47,6 +47,9 @@ User: {query}
    * @returns {Promise<string>} - The agent's response
    */
   async processQuery(query, product = null, systemPrompt = null) {
+    console.log(
+      `Starting AI processing for query: "${query.substring(0, 50)}${query.length > 50 ? "..." : ""}"`,
+    );
     console.time("AgentService:processQuery");
     try {
       // Use default system prompt if none provided
@@ -60,16 +63,19 @@ User: {query}
 
       // If product is provided, include it in the query
       if (product) {
+        console.log(`Processing query with product ID: ${product.id}`);
         finalQuery = `${finalQuery}\n\nProduct Information:\n${JSON.stringify(product, null, 2)}`;
       }
 
       // Invoke the chain
+      console.log(`Sending request to AI model...`);
       console.time("AgentService:modelInvoke");
       const response = await chain.invoke({
         system: finalSystemPrompt,
         query: finalQuery,
       });
       console.timeEnd("AgentService:modelInvoke");
+      console.log(`AI model response received`);
 
       console.timeEnd("AgentService:processQuery");
       return response;

@@ -20,15 +20,18 @@ class RecommendationService {
    * @returns {Promise<Object>} - A recommended product
    */
   async getRecommendationForProduct(productId) {
+    console.log(`Starting recommendation process for product ID: ${productId}`);
     console.time(
       `RecommendationService:getRecommendationForProduct:${productId}`,
     );
     // Get the original product
+    console.log(`Fetching product details for ID: ${productId}`);
     console.time(`RecommendationService:getProductById:${productId}`);
     const originalProduct = await ProductService.getProductById(productId);
     console.timeEnd(`RecommendationService:getProductById:${productId}`);
 
     if (!originalProduct) {
+      console.log(`Product with ID ${productId} not found`);
       console.timeEnd(
         `RecommendationService:getRecommendationForProduct:${productId}`,
       );
@@ -36,11 +39,17 @@ class RecommendationService {
     }
 
     // Use the ProductRecommender to generate a recommendation
+    console.log(
+      `Generating recommendation for product: "${originalProduct.name}"`,
+    );
     console.time(`RecommendationService:generateRecommendation:${productId}`);
     const recommendedProduct =
       await ProductRecommender.generateRecommendation(originalProduct);
     console.timeEnd(
       `RecommendationService:generateRecommendation:${productId}`,
+    );
+    console.log(
+      `Recommendation generated successfully: "${recommendedProduct.name}"`,
     );
 
     // Return the recommendation with the expected structure
@@ -176,11 +185,15 @@ class RecommendationService {
    * @returns {Promise<Object>} - The saved recommendation
    */
   async saveRecommendedProduct(sourceProductId, recommendedProduct) {
+    console.log(
+      `Starting to save recommended product for source product ID: ${sourceProductId}`,
+    );
     console.time(
       `RecommendationService:saveRecommendedProduct:${sourceProductId}`,
     );
     try {
       // First, check if the source product exists
+      console.log(`Verifying source product exists (ID: ${sourceProductId})`);
       console.time(`RecommendationService:getSourceProduct:${sourceProductId}`);
       const sourceProduct =
         await ProductService.getProductById(sourceProductId);
@@ -189,6 +202,7 @@ class RecommendationService {
       );
 
       if (!sourceProduct) {
+        console.log(`Source product with ID ${sourceProductId} not found`);
         console.timeEnd(
           `RecommendationService:saveRecommendedProduct:${sourceProductId}`,
         );
@@ -212,11 +226,16 @@ class RecommendationService {
       }
 
       // Save the product
+      console.log(`Creating new product: "${productToSave.name}"`);
       console.time(`RecommendationService:createProduct:${sourceProductId}`);
       const savedProduct = await ProductService.createProduct(productToSave);
       console.timeEnd(`RecommendationService:createProduct:${sourceProductId}`);
+      console.log(`Product created successfully with ID: ${savedProduct.id}`);
 
       // Now create the recommendation relationship
+      console.log(
+        `Creating recommendation relationship between products ${sourceProductId} and ${savedProduct.id}`,
+      );
       console.time(
         `RecommendationService:saveRecommendation:${sourceProductId}`,
       );
@@ -227,6 +246,7 @@ class RecommendationService {
       console.timeEnd(
         `RecommendationService:saveRecommendation:${sourceProductId}`,
       );
+      console.log(`Recommendation relationship created successfully`);
 
       console.timeEnd(
         `RecommendationService:saveRecommendedProduct:${sourceProductId}`,
