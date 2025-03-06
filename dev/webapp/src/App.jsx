@@ -98,7 +98,7 @@ function App() {
           {catalog.length === 0 ? (
             <em>There are no products... yet!</em>
           ) : (
-            <table>
+            <table className="full-width-table">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -106,9 +106,6 @@ function App() {
                   <th>Description</th>
                   <th>Category</th>
                   <th>Price</th>
-                  <th>UPC</th>
-                  <th>Inventory</th>
-                  <th>Image</th>
                   <th>Actions</th>
                 </tr>
               </thead>
