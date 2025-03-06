@@ -1,4 +1,5 @@
 const ProductService = require("./ProductService");
+const ProductRecommender = require("./ProductRecommender");
 
 class RecommendationService {
   /**
@@ -14,12 +15,9 @@ class RecommendationService {
       throw new Error(`Product with ID ${productId} not found`);
     }
 
-    // Create a modified version as a recommendation
-    const recommendation = {
-      ...originalProduct,
-      id: originalProduct.id + 1000, // Just to make it different
-      description: `Recommended for ${originalProduct.name}`,
-    };
+    // Use the ProductRecommender to generate a recommendation
+    const recommendation =
+      await ProductRecommender.generateRecommendation(originalProduct);
 
     return recommendation;
   }
