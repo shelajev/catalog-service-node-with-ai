@@ -5,6 +5,7 @@ class ProductRecommender {
   constructor() {
     this.systemPrompt = `You are a product recommendation expert. 
 Your job is to recommend products that work great with or are frequently bought together with a given product.
+You must ensure that your recommended product has a unique name that doesn't match any existing product in the catalog.
 Always respond with valid JSON in the format:
 {
   "name": "Product Name",
@@ -28,8 +29,19 @@ Always respond with valid JSON in the format:
       throw new Error("Product is required to generate a recommendation");
     }
 
+    // Get all products from the catalog to avoid duplicates
+    console.log(`Fetching all products from catalog to avoid duplicates`);
+    console.time(`ProductRecommender:getProducts:${product.id}`);
+    const allProducts = await ProductService.getProducts();
+    console.timeEnd(`ProductRecommender:getProducts:${product.id}`);
+
+    // Extract product names for the prompt
+    const existingProductNames = allProducts.map((p) => p.name);
+
     const query = `Recommend a product that works great with or is frequently bought together with this product.
-Make sure your recommendation is realistic and complementary to the original product.`;
+Make sure your recommendation is realistic and complementary to the original product.
+IMPORTANT: Your recommendation MUST have a unique name that is not in the following list of existing product names:
+${existingProductNames.join(", ")}`;
 
     try {
       console.log(
@@ -92,9 +104,11 @@ Make sure your recommendation is realistic and complementary to the original pro
    * @returns {Object} - A simple recommendation
    */
   createFallbackRecommendation(product) {
+    // Add timestamp to ensure name uniqueness
+    const timestamp = new Date().toISOString().slice(11, 19).replace(/:/g, "");
     return {
       id: product.id + 1000,
-      name: `Companion for ${product.name}`,
+      name: `Companion for ${product.name} (${timestamp})`,
       description: `This product works great with ${product.name}`,
       category: product.category,
       price: product.price * 0.8,

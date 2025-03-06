@@ -33,25 +33,25 @@ function App() {
     }).then(fetchCatalog);
   }, [fetchCatalog]);
 
-  const addRecommendation = useCallback(
-    (product) => {
-      console.log("Recommendation received:", product);
-      if (
-        !recommendations.some((rec) => {
-          // Handle both possible structures
-          const recId =
-            rec.id || (rec.recommendedProduct && rec.recommendedProduct.id);
-          const productId =
-            product.id ||
-            (product.recommendedProduct && product.recommendedProduct.id);
-          return recId === productId;
-        })
-      ) {
-        setRecommendations((prev) => [...prev, product]);
-      }
-    },
-    [recommendations],
-  );
+  const addRecommendation = useCallback((product) => {
+    console.log("Recommendation received:", product);
+
+    // Debug the actual structure
+    console.log("Recommendation structure:", {
+      hasSourceProductId: !!product.sourceProductId,
+      hasRecommendedProduct: !!product.recommendedProduct,
+      recommendedProductId: product.recommendedProduct?.id,
+      directId: product.id,
+    });
+
+    // Add a timestamp to make each recommendation unique
+    const uniqueProduct = {
+      ...product,
+      _timestamp: Date.now(),
+    };
+
+    setRecommendations((prev) => [...prev, uniqueProduct]);
+  }, []);
 
   const clearRecommendations = useCallback(() => {
     setRecommendations([]);
@@ -59,13 +59,14 @@ function App() {
 
   const saveRecommendation = useCallback(
     (recommendation) => {
-      // Handle both possible structures
-      const recId =
-        recommendation.id ||
+      // Use timestamp as unique identifier if available
+      const savingId =
+        recommendation._timestamp ||
         (recommendation.recommendedProduct &&
-          recommendation.recommendedProduct.id);
+          recommendation.recommendedProduct.id) ||
+        recommendation.id;
 
-      setSavingRecommendation(recId);
+      setSavingRecommendation(savingId);
 
       // Determine the correct structure based on the recommendation object
       if (recommendation.sourceProductId && recommendation.recommendedProduct) {
@@ -93,11 +94,11 @@ function App() {
             // Refresh catalog and highlight the newly added product
             fetchCatalog();
             // Set the highlighted product ID (use the recommended product ID)
-            const productId = data.recommendedProduct?.id || recId;
+            const productId = data.recommendedProduct?.id || savingId;
             setHighlightedProductId(productId);
 
             // Mark the recommendation for fade out
-            setFadingOutRecommendationId(recId);
+            setFadingOutRecommendationId(savingId);
 
             // Clear highlight after 3 seconds
             setTimeout(() => {
@@ -108,10 +109,14 @@ function App() {
             setTimeout(() => {
               setRecommendations((prev) =>
                 prev.filter((rec) => {
-                  const currentRecId =
-                    rec.id ||
-                    (rec.recommendedProduct && rec.recommendedProduct.id);
-                  return currentRecId !== recId;
+                  // If we have timestamps, use them for comparison
+                  if (rec._timestamp && recommendation._timestamp) {
+                    return rec._timestamp !== recommendation._timestamp;
+                  }
+
+                  // Otherwise fall back to ID comparison
+                  const currentRecId = getProductProperty(rec, "id");
+                  return currentRecId !== savingId;
                 }),
               );
               setFadingOutRecommendationId(null);
@@ -180,9 +185,15 @@ function App() {
               {recommendations.map((recommendation) => {
                 const id = getProductProperty(recommendation, "id");
                 const isFadingOut = fadingOutRecommendationId === id;
+
+                // Use timestamp for unique key if available
+                const uniqueKey = recommendation._timestamp
+                  ? `rec-${id}-${recommendation._timestamp}`
+                  : `rec-${id}-${Math.random().toString(36).substr(2, 9)}`;
+
                 return (
                   <tr
-                    key={`rec-${id}`}
+                    key={uniqueKey}
                     className={isFadingOut ? "fading-out-row" : ""}
                   >
                     <td>{id}</td>
@@ -194,10 +205,16 @@ function App() {
                       <button
                         className="save-recommendation"
                         onClick={() => saveRecommendation(recommendation)}
-                        disabled={savingRecommendation === id || isFadingOut}
+                        disabled={
+                          savingRecommendation ===
+                            (recommendation._timestamp || id) || isFadingOut
+                        }
                         title="Save recommendation"
                       >
-                        {savingRecommendation === id ? "..." : "+"}
+                        {savingRecommendation ===
+                        (recommendation._timestamp || id)
+                          ? "..."
+                          : "+"}
                       </button>
                     </td>
                   </tr>
