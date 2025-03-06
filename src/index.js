@@ -60,6 +60,28 @@ app.get("/api/products/:id", async (req, res) => {
   res.json(product);
 });
 
+// Add DELETE endpoint for products
+app.delete("/api/products/:id", async (req, res) => {
+  try {
+    const productId = parseInt(req.params.id, 10);
+
+    if (isNaN(productId)) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    const deleted = await ProductService.deleteProduct(productId);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/api/products/:id/image", async (req, res) => {
   const product = await ProductService.getProductById(req.params.id);
 

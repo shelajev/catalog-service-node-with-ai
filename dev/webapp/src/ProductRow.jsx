@@ -1,6 +1,13 @@
 import { useCallback, useState } from "react";
 
-export function ProductRow({ product, onChange, onRecommend, highlighted }) {
+export function ProductRow({
+  product,
+  onChange,
+  onRecommend,
+  highlighted,
+  onDelete,
+  isDeleting,
+}) {
   const [isRecommending, setIsRecommending] = useState(false);
 
   // Keep these functions for backend functionality but don't display in UI
@@ -41,9 +48,23 @@ export function ProductRow({ product, onChange, onRecommend, highlighted }) {
           className="smaller"
           onClick={getRecommendation}
           disabled={isRecommending}
+          title="Recommend"
         >
-          {isRecommending ? "Loading..." : "Recommend"}
+          {isRecommending ? "..." : "🧩"}
         </button>
+        {onDelete && (
+          <>
+            {" "}
+            <button
+              className="smaller delete-btn"
+              onClick={() => onDelete(product.id)}
+              disabled={isDeleting}
+              title="Delete product"
+            >
+              {isDeleting ? "..." : "🗑️"}
+            </button>
+          </>
+        )}
       </td>
     </tr>
   );

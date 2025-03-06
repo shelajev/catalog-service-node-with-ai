@@ -10,6 +10,7 @@ function App() {
   const [highlightedProductId, setHighlightedProductId] = useState(null);
   const [fadingOutRecommendationId, setFadingOutRecommendationId] =
     useState(null);
+  const [deletingProductId, setDeletingProductId] = useState(null);
 
   const fetchCatalog = useCallback(() => {
     fetch("/api/products")
@@ -32,6 +33,29 @@ function App() {
       body: JSON.stringify({}),
     }).then(fetchCatalog);
   }, [fetchCatalog]);
+
+  const deleteProduct = useCallback(
+    (productId) => {
+      setDeletingProductId(productId);
+      fetch(`/api/products/${productId}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to delete product (${response.status})`);
+          }
+          fetchCatalog();
+        })
+        .catch((error) => {
+          console.error("Error deleting product:", error);
+          alert(`Failed to delete product: ${error.message}`);
+        })
+        .finally(() => {
+          setDeletingProductId(null);
+        });
+    },
+    [fetchCatalog],
+  );
 
   const addRecommendation = useCallback((product) => {
     console.log("Recommendation received:", product);
@@ -255,6 +279,8 @@ function App() {
                     onChange={() => fetchCatalog()}
                     onRecommend={addRecommendation}
                     highlighted={product.id === highlightedProductId}
+                    onDelete={deleteProduct}
+                    isDeleting={deletingProductId === product.id}
                   />
                 ))}
               </tbody>

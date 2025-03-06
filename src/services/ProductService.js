@@ -107,6 +107,60 @@ async function uploadProductImage(id, buffer) {
   await client.query("UPDATE products SET has_image=TRUE WHERE id=$1", [id]);
 }
 
+async function deleteProduct(id) {
+  const client = await getClient();
+
+  // First check if the product exists
+  const checkResult = await client.query(
+    "SELECT * FROM products WHERE id = $1",
+    [id],
+  );
+
+  if (checkResult.rows.length === 0) {
+    return false;
+  }
+
+  const product = checkResult.rows[0];
+
+  try {
+    // Start a transaction
+    await client.query("BEGIN");
+
+    // Delete any recommendations where this product is the source
+    await client.query(
+      "DELETE FROM saved_recommendations WHERE source_product_id = $1",
+      [id],
+    );
+
+    // Delete any recommendations where this product is the recommended product
+    await client.query(
+      "DELETE FROM saved_recommendations WHERE recommended_product_id = $1",
+      [id],
+    );
+
+    // Delete the product
+    await client.query("DELETE FROM products WHERE id = $1", [id]);
+
+    // Commit the transaction
+    await client.query("COMMIT");
+
+    // Publish an event about the deletion
+    publishEvent("products", {
+      action: "product_deleted",
+      id: id,
+      name: product.name,
+      upc: product.upc,
+    });
+
+    return true;
+  } catch (error) {
+    // Rollback in case of error
+    await client.query("ROLLBACK");
+    console.error("Error in deleteProduct transaction:", error);
+    throw error;
+  }
+}
+
 async function generateRandomProduct() {
   console.time("generateRandomProduct");
   const product = await productGenerator.generateRandomProduct();
@@ -120,6 +174,7 @@ module.exports = {
   getProductById,
   getProductImage,
   uploadProductImage,
+  deleteProduct,
   generateRandomProduct,
   teardown,
 };
