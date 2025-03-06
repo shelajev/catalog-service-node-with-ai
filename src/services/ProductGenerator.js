@@ -14,15 +14,7 @@ class ProductGenerator {
     // Define prompts for easy editing
     this.userPromptTemplate = `Generate a realistic product name and description for a product in the {category} category. 
 Format your response as a JSON object with two fields: "name" and "description".
-The name should be short (3-5 words). The description should be 1-2 sentences.
-
-Always respond with valid JSON in the format:
-
-{
-  "name": "Product Name",
-  "description": "Product description that explains why this product works well with the original product",
-  "category": "Category Name"
-}`;
+The name should be short (3-5 words). The description should be 1-2 sentences.`;
 
     this.systemPrompt = `You are a product catalog assistant. Your job is to generate realistic product names and descriptions.
 Always respond with valid JSON in the format {"name": "Product Name", "description": "Product description"}`;
