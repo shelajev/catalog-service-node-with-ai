@@ -90,3 +90,38 @@ td img {
   background-color: #cccccc;
   cursor: not-allowed;
 }
+
+.highlighted-row {
+  animation: highlight-fade 3s ease-out;
+}
+
+@keyframes highlight-fade {
+  0% {
+    outline: 4px solid #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+  }
+  70% {
+    outline: 4px solid #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+  }
+  100% {
+    outline: 0px solid transparent;
+    background-color: transparent;
+  }
+}
+
+.fading-out-row {
+  animation: fade-out 1s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+    background-color: rgba(76, 175, 80, 0.2);
+  }
+  100% {
+    opacity: 0.3;
+    background-color: rgba(76, 175, 80, 0.05);
+  }
+}

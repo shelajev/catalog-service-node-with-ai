@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-export function ProductRow({ product, onChange, onRecommend }) {
+export function ProductRow({ product, onChange, onRecommend, highlighted }) {
   const [isRecommending, setIsRecommending] = useState(false);
 
   // Keep these functions for backend functionality but don't display in UI
@@ -30,7 +30,7 @@ export function ProductRow({ product, onChange, onRecommend }) {
   }, [product.id, onRecommend]);
 
   return (
-    <tr>
+    <tr className={highlighted ? "highlighted-row" : ""}>
       <td>{product.id}</td>
       <td>{product.name}</td>
       <td>{product.description}</td>

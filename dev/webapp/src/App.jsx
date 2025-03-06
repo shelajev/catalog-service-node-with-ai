@@ -7,6 +7,9 @@ function App() {
   const [catalog, setCatalog] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [savingRecommendation, setSavingRecommendation] = useState(null);
+  const [highlightedProductId, setHighlightedProductId] = useState(null);
+  const [fadingOutRecommendationId, setFadingOutRecommendationId] =
+    useState(null);
 
   const fetchCatalog = useCallback(() => {
     fetch("/api/products")
@@ -54,55 +57,82 @@ function App() {
     setRecommendations([]);
   }, []);
 
-  const saveRecommendation = useCallback((recommendation) => {
-    // Handle both possible structures
-    const recId =
-      recommendation.id ||
-      (recommendation.recommendedProduct &&
-        recommendation.recommendedProduct.id);
+  const saveRecommendation = useCallback(
+    (recommendation) => {
+      // Handle both possible structures
+      const recId =
+        recommendation.id ||
+        (recommendation.recommendedProduct &&
+          recommendation.recommendedProduct.id);
 
-    setSavingRecommendation(recId);
+      setSavingRecommendation(recId);
 
-    // Determine the correct structure based on the recommendation object
-    if (recommendation.sourceProductId && recommendation.recommendedProduct) {
-      // New structure - save the recommended product first
-      fetch("/api/recommended-products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sourceProductId: recommendation.sourceProductId,
-          recommendedProduct: recommendation.recommendedProduct,
-        }),
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            // Try to get the detailed error message from the response
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(
-              errorData.error ||
-                `Failed to save recommendation (${response.status})`,
-            );
-          }
-          return response.json();
+      // Determine the correct structure based on the recommendation object
+      if (recommendation.sourceProductId && recommendation.recommendedProduct) {
+        // New structure - save the recommended product first
+        fetch("/api/recommended-products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sourceProductId: recommendation.sourceProductId,
+            recommendedProduct: recommendation.recommendedProduct,
+          }),
         })
-        .then(() => {
-          // Show success feedback
-          alert("Recommendation saved successfully!");
-        })
-        .catch((error) => {
-          console.error("Error saving recommendation:", error);
-          alert(`Failed to save recommendation: ${error.message}`);
-        })
-        .finally(() => {
-          setSavingRecommendation(null);
-        });
-    } else {
-      // Old structure or unknown - try the old way
-      // This is a fallback and might not work correctly
-      alert("Cannot save this recommendation - invalid format");
-      setSavingRecommendation(null);
-    }
-  }, []);
+          .then(async (response) => {
+            if (!response.ok) {
+              // Try to get the detailed error message from the response
+              const errorData = await response.json().catch(() => ({}));
+              throw new Error(
+                errorData.error ||
+                  `Failed to save recommendation (${response.status})`,
+              );
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Refresh catalog and highlight the newly added product
+            fetchCatalog();
+            // Set the highlighted product ID (use the recommended product ID)
+            const productId = data.recommendedProduct?.id || recId;
+            setHighlightedProductId(productId);
+
+            // Mark the recommendation for fade out
+            setFadingOutRecommendationId(recId);
+
+            // Clear highlight after 3 seconds
+            setTimeout(() => {
+              setHighlightedProductId(null);
+            }, 3000);
+
+            // Remove the recommendation after fade out animation completes
+            setTimeout(() => {
+              setRecommendations((prev) =>
+                prev.filter((rec) => {
+                  const currentRecId =
+                    rec.id ||
+                    (rec.recommendedProduct && rec.recommendedProduct.id);
+                  return currentRecId !== recId;
+                }),
+              );
+              setFadingOutRecommendationId(null);
+            }, 1000);
+          })
+          .catch((error) => {
+            console.error("Error saving recommendation:", error);
+            alert(`Failed to save recommendation: ${error.message}`);
+          })
+          .finally(() => {
+            setSavingRecommendation(null);
+          });
+      } else {
+        // Old structure or unknown - try the old way
+        // This is a fallback and might not work correctly
+        alert("Cannot save this recommendation - invalid format");
+        setSavingRecommendation(null);
+      }
+    },
+    [fetchCatalog],
+  );
 
   useEffect(() => {
     fetchCatalog();
@@ -149,8 +179,12 @@ function App() {
             <tbody>
               {recommendations.map((recommendation) => {
                 const id = getProductProperty(recommendation, "id");
+                const isFadingOut = fadingOutRecommendationId === id;
                 return (
-                  <tr key={`rec-${id}`}>
+                  <tr
+                    key={`rec-${id}`}
+                    className={isFadingOut ? "fading-out-row" : ""}
+                  >
                     <td>{id}</td>
                     <td>{getProductProperty(recommendation, "name")}</td>
                     <td>{getProductProperty(recommendation, "description")}</td>
@@ -160,7 +194,7 @@ function App() {
                       <button
                         className="save-recommendation"
                         onClick={() => saveRecommendation(recommendation)}
-                        disabled={savingRecommendation === id}
+                        disabled={savingRecommendation === id || isFadingOut}
                         title="Save recommendation"
                       >
                         {savingRecommendation === id ? "..." : "+"}
@@ -203,6 +237,7 @@ function App() {
                     product={product}
                     onChange={() => fetchCatalog()}
                     onRecommend={addRecommendation}
+                    highlighted={product.id === highlightedProductId}
                   />
                 ))}
               </tbody>
