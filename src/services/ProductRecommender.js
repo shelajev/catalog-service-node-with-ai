@@ -7,10 +7,10 @@ class ProductRecommender {
 Your job is to recommend products that work great with or are frequently bought together with a given product.
 You must ensure that your recommended product has a unique name that doesn't match any existing product in the catalog.
 Always respond with valid JSON in the format:
+
 {
   "name": "Product Name",
   "description": "Product description that explains why this product works well with the original product",
-  "price": 99.99,
   "category": "Category Name"
 }`;
   }
