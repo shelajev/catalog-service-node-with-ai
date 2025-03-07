@@ -2,7 +2,7 @@ const { OllamaContainer } = require("@testcontainers/ollama");
 
 async function createAndBootstrapOllamaContainer() {
   // Create and start the Ollama container
-  const ollamaContainer = await new OllamaContainer().start();
+  const ollamaContainer = await new OllamaContainer().withReuse(true).start();
 
   // Set environment variables for the Ollama API
   process.env.OLLAMA_API_URL = ollamaContainer.getEndpoint();

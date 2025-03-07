@@ -29,6 +29,7 @@ async function createAndBootstrapKafkaContainer() {
   const kafkaContainer = await new KafkaContainer("confluentinc/cp-kafka:7.8.0")
     .withKraft()
     .withExposedPorts(9093)
+    .withReuse(true)
     .start();
 
   process.env.KAFKA_BOOTSTRAP_SERVERS = `${kafkaContainer.getHost()}:${kafkaContainer.getMappedPort(9093)}`;
