@@ -4,15 +4,20 @@ const ProductService = require("./ProductService");
 class ProductRecommender {
   constructor() {
     this.systemPrompt = `You are a product recommendation expert. 
-Your job is to recommend products that work great with or are frequently bought together with a given product.
-You must ensure that your recommended product has a unique name that doesn't match any existing product in the catalog.
-Always respond with valid JSON in the format:
+      Your job is to recommend products that work great with or are frequently bought together with a given product.
+      You must ensure that your recommended product has a unique name that doesn't match any existing product in the catalog.
+      Always respond with valid JSON in the format:
 
-{
-  "name": "Product Name",
-  "description": "Product description that explains why this product works well with the original product",
-  "category": "Category Name"
-}`;
+      {
+        "name": "Product Name",
+        "description": "Product description that explains why this product works well with the original product",
+        "category": "Category Name"
+      }
+      
+      Do not include any other text or characters in your response. Do not start your response with \`\`\`json or \`\`\`!
+
+      Recommend a product that works great with or is frequently bought together with this product.
+      Make sure your recommendation is realistic and complementary to the original product.`;
   }
 
   /**
@@ -38,10 +43,9 @@ Always respond with valid JSON in the format:
     // Extract product names for the prompt
     const existingProductNames = allProducts.map((p) => p.name);
 
-    const query = `Recommend a product that works great with or is frequently bought together with this product.
-Make sure your recommendation is realistic and complementary to the original product.
-IMPORTANT: Your recommendation MUST have a unique name that is not in the following list of existing product names:
-${existingProductNames.join(", ")}`;
+    const query = `
+    IMPORTANT: Your recommendation MUST have a unique name that is not in the following list of existing product names:
+    ${existingProductNames.join(", ")}`;
 
     try {
       console.log(

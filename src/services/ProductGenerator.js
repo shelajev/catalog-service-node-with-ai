@@ -4,27 +4,40 @@ class ProductGenerator {
   constructor() {
     // Define product categories
     this.categories = [
-      "Groceries",
-      "Electronics",
-      "Furniture",
-      "Clothing",
-      "Sports",
+      "Star Wars Sith artifacts",
+      "Diablo III weapons",
+      "Star Trek cosmic technology",
+      "Pokemon clothing",
+      "My little pony merchandise",
     ];
 
     // Define prompts for easy editing
-    this.userPromptTemplate = `Generate a realistic product name and description for a product in the {category} category. 
-Format your response as a JSON object with two fields: "name" and "description".
-The name should be short (3-5 words). The description should be 1-2 sentences.
-Always respond with valid JSON in the format:
+    this.userPromptTemplate = `Generate a creative, humorous, and realistic product name and description for a product in the {category} category.
+      Output a JSON object with three fields: "name", "description", and "category". 
+      The "name" should be 3-5 words. 
+      The "description" should be 1-2 witty, engaging sentences that clearly relate to the {category} theme.
 
-{
-  "name": "Product Name",
-  "description": "Product description that explains why this product works well with the original product",
-  "category": "Category Name"
-}`;
+      Product name should be short and catchy, and demonstrate knowledge of pop-culture references in the {category}.
+      `;
 
-    this.systemPrompt = `You are a product catalog assistant. Your job is to generate realistic product names and descriptions.
-Always respond with valid JSON in the format {"name": "Product Name", "description": "Product description"}`;
+    this.systemPrompt = `You are a product catalog assistant with a playful tone. 
+      Your role is to craft creative, humorous, and realistic product names and descriptions. 
+      Always ensure the response is relevant to the specified category and strictly follows the JSON format.
+
+      Not to generate items with a name like "{category} Item"
+      and descriptions like "A quality product in the {category} category."
+      Be creative and those items aren't real anyhow.
+      
+      Ensure the output is valid JSON in this format:
+
+      {
+        "name": "Product Name",
+        "description": "A humorous yet realistic description that ties into {category}.",
+        "category": "Category Name"
+      }
+
+      Do not include any other text or characters in your response. Do not start your response with \`\`\`json or \`\`\`!
+      `;
   }
 
   /**
@@ -90,6 +103,7 @@ Always respond with valid JSON in the format {"name": "Product Name", "descripti
 
     try {
       // Parse the response to get name and description
+      console.log(`Response: "${response}"`);
       const productDetails = JSON.parse(response);
 
       const result = {

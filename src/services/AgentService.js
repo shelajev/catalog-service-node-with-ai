@@ -7,7 +7,7 @@ class AgentService {
   constructor() {
     // Initialize the Ollama model with environment variables
     const ollamaApiUrl = process.env.OLLAMA_API_URL || "http://localhost:11434";
-    const ollamaModel = process.env.OLLAMA_MODEL || "llama3.2:3b";
+    const ollamaModel = process.env.OLLAMA_MODEL || "gemma2:9b";
 
     this.model = new Ollama({
       baseUrl: ollamaApiUrl,
