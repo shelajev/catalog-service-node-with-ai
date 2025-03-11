@@ -5,7 +5,7 @@ const { createAndBootstrapKafkaContainer } = require("./containerSupport");
 describe("AI Generation Quality", () => {
   let postgresContainer, ollamaContainer, kafkaContainer;
   let productService, recommendationService;
-  const TEST_ITEMS_COUNT = 5;
+  const TEST_ITEMS_COUNT = 6;
 
   beforeAll(async () => {
     await Promise.all([
