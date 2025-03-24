@@ -1,18 +1,24 @@
-const { Ollama } = require("@langchain/ollama");
+const { ChatOpenAI } = require("@langchain/openai");
 const { PromptTemplate } = require("@langchain/core/prompts");
 const { StringOutputParser } = require("@langchain/core/output_parsers");
 const { RunnableSequence } = require("@langchain/core/runnables");
 
 class AgentService {
   constructor() {
-    // Initialize the Ollama model with environment variables
-    const ollamaApiUrl = process.env.OLLAMA_API_URL || "http://localhost:11434";
-    const ollamaModel = process.env.OLLAMA_MODEL || "gemma2:9b";
+    const openAiApiUrl =
+      process.env.OPENAI_API_URL ||
+      "http://localhost:12434/engines/llama.cpp/v1";
+    const openAiApiKey = process.env.OPENAI_API_KEY || "not-needed";
+    const openAiModel =
+      process.env.OPENAI_MODEL || "emilycasey003/llama1b:latest";
 
-    this.model = new Ollama({
-      baseUrl: ollamaApiUrl,
-      model: ollamaModel,
-      temperature: 0.7, // Controls randomness (0 = deterministic, 1 = creative)
+    this.model = new ChatOpenAI({
+      openAIApiKey: openAiApiKey,
+      configuration: {
+        baseURL: openAiApiUrl,
+      },
+      modelName: openAiModel,
+      temperature: 0.7,
     });
   }
 
