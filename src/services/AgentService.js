@@ -9,8 +9,7 @@ class AgentService {
       process.env.OPENAI_API_URL ||
       "http://localhost:12434/engines/llama.cpp/v1";
     const openAiApiKey = process.env.OPENAI_API_KEY || "not-needed";
-    const openAiModel =
-      process.env.OPENAI_MODEL || "emilycasey003/llama1b:latest";
+    const openAiModel = process.env.OPENAI_MODEL || "ai/llama3.2:1B-Q4_0";
 
     this.model = new ChatOpenAI({
       openAIApiKey: openAiApiKey,

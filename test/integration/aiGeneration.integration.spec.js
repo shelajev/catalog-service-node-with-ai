@@ -1,5 +1,4 @@
 const { createAndBootstrapPostgresContainer } = require("./containerSupport");
-const { createAndBootstrapOllamaContainer } = require("./ollamaSupport");
 const { createAndBootstrapKafkaContainer } = require("./containerSupport");
 
 describe("AI Generation Quality", () => {
@@ -12,7 +11,6 @@ describe("AI Generation Quality", () => {
       createAndBootstrapPostgresContainer().then(
         (c) => (postgresContainer = c),
       ),
-      createAndBootstrapOllamaContainer().then((c) => (ollamaContainer = c)),
       createAndBootstrapKafkaContainer().then((c) => (kafkaContainer = c)),
     ]);
 
@@ -26,7 +24,6 @@ describe("AI Generation Quality", () => {
 
     await Promise.all([
       postgresContainer.stop(),
-      // ollamaContainer.stop(),
       // kafkaContainer.stop(),
     ]);
   }, 30000);

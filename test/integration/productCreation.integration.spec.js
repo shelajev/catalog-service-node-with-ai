@@ -4,11 +4,10 @@ const {
   createAndBootstrapKafkaContainer,
   createAndBootstrapLocalstackContainer,
 } = require("./containerSupport");
-const { createAndBootstrapOllamaContainer } = require("./ollamaSupport");
 const { KafkaConsumer } = require("./kafkaSupport");
 
 describe("Product creation", () => {
-  let postgresContainer, kafkaContainer, localstackContainer, ollamaContainer;
+  let postgresContainer, kafkaContainer, localstackContainer;
   let kafkaConsumer;
   let productService, publisherService, agentService;
 
@@ -23,7 +22,6 @@ describe("Product creation", () => {
       createAndBootstrapLocalstackContainer().then(
         (c) => (localstackContainer = c),
       ),
-      createAndBootstrapOllamaContainer().then((c) => (ollamaContainer = c)),
     ]);
 
     kafkaConsumer = await new KafkaConsumer();
@@ -48,7 +46,6 @@ describe("Product creation", () => {
       postgresContainer.stop(),
       kafkaContainer.stop(),
       localstackContainer.stop(),
-      ollamaContainer.stop(),
     ]);
   });
 
