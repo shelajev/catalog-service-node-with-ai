@@ -1,21 +1,38 @@
 # Catalog Service - Node using AI
 
-This is a Node.js-based application that leverages AI for generating and recommending products in a catalog system. 
+This is a Node.js-based application that leverages AI for generating and recommending products in a catalog system.
 The application seamlessly integrates with LangChain for AI processing, using Docker Model Runner as the execution framework
 
-This repo is a demo project that demonstrates all of Docker's services in a single project. Specifically, it includes the following:
+This repo is a demo project that demonstrates all of Docker's services in a single project.
 
-- A containerized development environment (in a few varieties of setup)
-- Integration testing with Testcontainers
-- Building in GitHub Actions with Docker Build Cloud
+This application uses Model Runner in Docker Desktop as the OpenAI compatible backend for AI used for product generation.
 
-## Trying it out
+Check out AgentService.js to see how it configures the connection to the Model runner.
 
-## Prerequisite
+```javascript
+class AgentService {
+  constructor() {
+    const openAiApiUrl =
+      process.env.OPENAI_API_URL ||
+      "http://localhost:12434/engines/llama.cpp/v1";
+    const openAiApiKey = process.env.OPENAI_API_KEY || "not-needed";
+    const openAiModel = process.env.OPENAI_MODEL || "ai/llama3.2:1B-Q4_0";
+
+    this.model = new ChatOpenAI({
+      openAIApiKey: openAiApiKey,
+      configuration: {
+        baseURL: openAiApiUrl,
+      },
+      modelName: openAiModel,
+      temperature: 0.7,
+    });
+  }
+...
+```
 
 - Docker Desktop with Model Runner enabled
 
-This project is currently configured to run all dependent services in containers and the app natively on the machine (using Node installed on the machine).
+This project is currently configured to run all dependent services in containers and the AI model and the app natively on the machine (using Node installed on the machine).
 
 To start the app, follow these steps:
 
@@ -24,10 +41,8 @@ To start the app, follow these steps:
 2. Start all of the application dependencies
 
    ```console
-   docker compose -f compose/compose.yaml up 
+   docker compose up
    ```
- 
-   
 
 3. Install the app dependencies and start the main app with the following command:
 
@@ -37,10 +52,6 @@ To start the app, follow these steps:
    ```
 
 4. Once everything is up and running, you can open the demo client at [http://localhost:5173](http://localhost:5173).
-
-### Debugging the application
-
-The project contains configuration for VS Code to enable quick debgging. Once the app is running, you can start a debug session by using the **Debug** task in the "Run and Debug" panel. This currently only works when the app is running natively on the machine.
 
 ### Running tests
 
