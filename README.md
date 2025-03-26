@@ -1,4 +1,7 @@
-# Catalog Service - Node
+# Catalog Service - Node using AI
+
+This is a Node.js-based application that leverages AI for generating and recommending products in a catalog system. 
+The application seamlessly integrates with LangChain for AI processing, using Docker Model Runner as the execution framework
 
 This repo is a demo project that demonstrates all of Docker's services in a single project. Specifically, it includes the following:
 
@@ -7,6 +10,10 @@ This repo is a demo project that demonstrates all of Docker's services in a sing
 - Building in GitHub Actions with Docker Build Cloud
 
 ## Trying it out
+
+## Prerequisite
+
+- Docker Desktop with Model Runner enabled
 
 This project is currently configured to run all dependent services in containers and the app natively on the machine (using Node installed on the machine).
 
@@ -19,10 +26,7 @@ To start the app, follow these steps:
    ```console
    docker compose -f compose/compose.yaml up 
    ```
-   And separately start Ollama. Note Ollama container requests GPU access, so you should run it against the environment that allows that. 
-   ```console
-   docker compose -f compose/ollama.yaml up 
-   ```
+ 
    
 
 3. Install the app dependencies and start the main app with the following command:
@@ -48,7 +52,7 @@ This project contains a few unit tests and integration tests to demonstrate Test
 
 3. Press play for the test you'd like to run.
 
-The \*.integration.spec.js tests will use Testcontainers to launch Kafka, Postgres, LocalStack, and Ollama. 
+The \*.integration.spec.js tests will use Testcontainers to launch Kafka, Postgres & LocalStack.
 
 #### Running tests via the command line
 
