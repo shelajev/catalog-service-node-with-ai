@@ -36,7 +36,7 @@ class ProductGenerator {
         "category": "Category Name"
       }
 
-      Do not include any other text or characters in your response. Do not start your response with \`\`\`json or \`\`\`!
+      Do not include any other text or characters in your response. Do not start your response with \`\`\`json or \`\`\`! No markdown characters should be visible in the output.
       `;
   }
 
@@ -94,11 +94,11 @@ class ProductGenerator {
       `Requesting AI to generate product details for category: ${randomCategory}...`,
     );
     console.time("ProductGenerator:agentService");
-    const response = await agentService.processQuery(
-      userPrompt,
-      null,
-      this.systemPrompt,
-    );
+    const response = (
+      await agentService.processQuery(userPrompt, null, this.systemPrompt)
+    )
+      .replace("```json", "")
+      .replace("```", "");
     console.timeEnd("ProductGenerator:agentService");
 
     try {

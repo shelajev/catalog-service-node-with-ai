@@ -52,11 +52,11 @@ class ProductRecommender {
         `Requesting AI to generate recommendation for product: "${product.name}"`,
       );
       console.time(`ProductRecommender:agentService:${product.id}`);
-      const response = await agentService.processQuery(
-        query,
-        product,
-        this.systemPrompt,
-      );
+      const response = (
+        await agentService.processQuery(query, product, this.systemPrompt)
+      )
+        .replace("```json", "")
+        .replace("```", "");
       console.timeEnd(`ProductRecommender:agentService:${product.id}`);
       console.log(`AI recommendation received, processing response...`);
 
