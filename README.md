@@ -1,14 +1,44 @@
-# Catalog Service - Node
+# Catalog Service - Node using AI
 
-This repo is a demo project that demonstrates all of Docker's services in a single project. Specifically, it includes the following:
+This is a Node.js-based application that leverages AI for generating and recommending products in a catalog system.
+The application seamlessly integrates with LangChain for AI processing, using Docker Model Runner as the execution framework
 
-- A containerized development environment (in a few varieties of setup)
-- Integration testing with Testcontainers
-- Building in GitHub Actions with Docker Build Cloud
+This repo is a demo project that demonstrates all of Docker's services in a single project.
 
-## Trying it out
+This application uses Model Runner in Docker Desktop as the OpenAI compatible backend for AI used for product generation.
 
-This project is currently configured to run all dependent services in containers and the app natively on the machine (using Node installed on the machine).
+Check out AgentService.js to see how it configures the connection to the Model runner.
+
+```javascript
+class AgentService {
+  constructor() {
+    const openAiApiUrl =
+      process.env.OPENAI_API_URL ||
+      "http://localhost:12434/engines/llama.cpp/v1";
+    const openAiApiKey = process.env.OPENAI_API_KEY || "not-needed";
+    const openAiModel = process.env.OPENAI_MODEL || "ai/qwen2.5:7B-Q4_K_M";
+
+    this.model = new ChatOpenAI({
+      openAIApiKey: openAiApiKey,
+      configuration: {
+        baseURL: openAiApiUrl,
+      },
+      modelName: openAiModel,
+      temperature: 0.7,
+    });
+  }
+...
+```
+
+## Getting Started
+
+- Docker Desktop with Model Runner enabled
+- Enable host-side TCP support ( default port: 12434)
+
+<img width="1279" alt="image" src="https://github.com/user-attachments/assets/70a21f4e-7e48-4f0a-bdc6-08a4db4c1d5c" />
+
+
+This project is currently configured to run all dependent services in containers and the AI model and the app natively on the machine (using Node installed on the machine).
 
 To start the app, follow these steps:
 
@@ -17,13 +47,8 @@ To start the app, follow these steps:
 2. Start all of the application dependencies
 
    ```console
-   docker compose -f compose/compose.yaml up 
+   docker compose up
    ```
-   And separately start Ollama. Note Ollama container requests GPU access, so you should run it against the environment that allows that. 
-   ```console
-   docker compose -f compose/ollama.yaml up 
-   ```
-   
 
 3. Install the app dependencies and start the main app with the following command:
 
@@ -33,10 +58,6 @@ To start the app, follow these steps:
    ```
 
 4. Once everything is up and running, you can open the demo client at [http://localhost:5173](http://localhost:5173).
-
-### Debugging the application
-
-The project contains configuration for VS Code to enable quick debgging. Once the app is running, you can start a debug session by using the **Debug** task in the "Run and Debug" panel. This currently only works when the app is running natively on the machine.
 
 ### Running tests
 
@@ -48,7 +69,7 @@ This project contains a few unit tests and integration tests to demonstrate Test
 
 3. Press play for the test you'd like to run.
 
-The \*.integration.spec.js tests will use Testcontainers to launch Kafka, Postgres, LocalStack, and Ollama. 
+The \*.integration.spec.js tests will use Testcontainers to launch Kafka, Postgres & LocalStack.
 
 #### Running tests via the command line
 
