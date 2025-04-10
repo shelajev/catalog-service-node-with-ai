@@ -30,7 +30,10 @@ class AgentService {
 ...
 ```
 
+## Getting Started
+
 - Docker Desktop with Model Runner enabled
+- Enable host-side TCP support ( default port: 12434)
 
 This project is currently configured to run all dependent services in containers and the AI model and the app natively on the machine (using Node installed on the machine).
 
